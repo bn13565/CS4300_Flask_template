@@ -56,10 +56,13 @@ def search():
         data = []
         return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
+    activities = activities.lower()
     activities = activities.split(",")
     activities = [x.strip(' ') for x in activities]
+    likes = likes.lower()
     likes = likes.split(",")
     likes = [x.strip(' ') for x in likes]
+    dislikes = dislikes.lower()
     dislikes = dislikes.split(",")
     dislikes = [x.strip(' ') for x in dislikes]
 
@@ -82,6 +85,10 @@ def search():
 
     with open ('./data/inverted_index.json') as wil_file:
        result = json.load(wil_file)
+
+    # reddit_dict = {}
+
+
 
     if activities_and_likes[0] in result:
         answer = set([x[0] for x in result[activities_and_likes[0]]])
