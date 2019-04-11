@@ -52,8 +52,7 @@ def search():
     resultsPerPage = request.args.get('Results_per_page')
     page = request.args.get('page')
 
-    if not activities:
-        print("hi")
+    if not activities or not likes:
         data = []
         return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
@@ -75,6 +74,7 @@ def search():
         name_id_lookup = json.load(wil_file)
 
     inverted_dict_id_word = dict([[v,k] for k,v in word_id_lookup.items()])
+    inverted_dict_id_name = dict([[v,k] for k,v in name_id_lookup.items()])
 
     with open ('./data/tf.pickle', 'rb') as f:
         tf_transcripts = pickle.load(f)
@@ -83,17 +83,6 @@ def search():
     with open ('./data/inverted_index.json') as wil_file:
        result = json.load(wil_file)
 
-    # result = {}
-    # for i in range(len(tf_array)):
-    #     for j in range(len(tf_array[i])):
-    #         token = inverted_dict_id_word[j]
-    #         score = tf_array[i][j]
-    #         if score != 0:
-    #             if token in result:
-    #                 result[token].append((int(i), int(score)))
-    #             else:
-    #                 result[token] = [(int(i), int(score))]
-    #print(result)
     if activities_and_likes[0] in result:
         answer = set([x[0] for x in result[activities_and_likes[0]]])
         for token in activities_and_likes[1:]:
@@ -102,18 +91,18 @@ def search():
                 answer = answer.intersection(set(docs))
             else:
                 answer = []
+
+        for token in dislikes:
+            if token in result:
+                docs = [x[0] for x in result[token]]
+                answer = set(filter(lambda x: x not in docs, answer))
+
         answer = list(answer)
         data = answer[:10]
+        data = [inverted_dict_id_name[x] for x in data]
 
     else:
         data = []
-
-
-    #print(list(answer))
-
-    # with open('./data/stuff.json', 'w') as outfile:
-    #     json.dump(result, outfile)
-    #     outfile.write('\n')
 
 
     # with open ('./data/tfidf.pickle', 'rb') as f:
@@ -136,11 +125,3 @@ def search():
 #             result[token].append((msgs[i][0], token_set.count(token)))
 #         else:
 #             result[token]  = ((msgs[i][0], token_set.count(token)))
-
-
-
-    # if not activity:
-    #     isActivity =
-    # else:
-    #     output_message = "Your search: " + query
-    #     data = range(5)
