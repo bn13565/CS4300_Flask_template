@@ -5,6 +5,7 @@ import pickle
 import json
 from nltk.tokenize import TreebankWordTokenizer
 import string
+import math
 
 project_name = "Ilan's Cool Project Template"
 net_id = "Ilan Filonenko: if56"
@@ -52,6 +53,45 @@ def search():
     resultsPerPage = request.args.get('Results_per_page')
     page = request.args.get('page')
 
+    tfidf_array = []
+    tf_array = []
+
+    # with open ('./data/tfidf.pickle', 'rb') as f:
+    #     tf_idf_transcripts = pickle.load(f)
+    #     tfidf_array = tf_idf_transcripts.toarray()
+
+    with open ('./data/tf.pickle', 'rb') as f:
+        tf_transcripts = pickle.load(f)
+        tf_array = tf_transcripts.toarray()
+
+    with open ('./data/inverted_index.json') as wil_file:
+       inverted_index = json.load(wil_file)
+
+    with open ('./data/word_id_lookup.json') as wil_file:
+        word_id_lookup = json.load(wil_file)
+
+    with open ('./data/name_id_lookup.json') as wil_file:
+        name_id_lookup = json.load(wil_file)
+
+    with open ('./data/idf.json') as wil_file:
+       idf = json.load(wil_file)
+
+    with open ('./data/inverted_dict_id_word.json') as wil_file:
+        inverted_dict_id_word = json.load(wil_file)
+
+    with open ('./data/inverted_dict_id_name.json') as wil_file:
+        inverted_dict_id_name = json.load(wil_file)
+
+    doc_norms = np.zeros(len(tf_array))
+
+    for key in idf:
+        key_name = inverted_dict_id_word[key]
+        for idx,count in inverted_index[key_name]:
+            score = np.square(count * idf[key])
+            doc_norms[idx] += score
+
+    doc_norms = np.sqrt(doc_norms)
+
     if not activities or not likes:
         data = []
         return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
@@ -66,60 +106,49 @@ def search():
     dislikes = dislikes.split(",")
     dislikes = [x.strip(' ') for x in dislikes]
 
-    # activities = ['swimming']
-    # likes = ['beach']
-    # dislikes = ['mountain']
-    activities_and_likes = activities + likes
-
-    with open ('./data/word_id_lookup.json') as wil_file:
-        word_id_lookup = json.load(wil_file)
-    with open ('./data/name_id_lookup.json') as wil_file:
-        name_id_lookup = json.load(wil_file)
-
-    inverted_dict_id_word = dict([[v,k] for k,v in word_id_lookup.items()])
-    inverted_dict_id_name = dict([[v,k] for k,v in name_id_lookup.items()])
-
-    with open ('./data/tf.pickle', 'rb') as f:
-        tf_transcripts = pickle.load(f)
-        tf_array = tf_transcripts.toarray()
-
-    with open ('./data/inverted_index.json') as wil_file:
-       result = json.load(wil_file)
-
-    # reddit_dict = {}
-
-
-
-    if activities_and_likes[0] in result:
-        answer = set([x[0] for x in result[activities_and_likes[0]]])
-        for token in activities_and_likes[1:]:
-            if token in result:
-                docs = [x[0] for x in result[token]]
-                answer = answer.intersection(set(docs))
+    def cos_sim(query):
+        query_dict = {}
+        ranking = [0] * len(doc_norms)
+        for query_type in range(len(query)):
+            if query_type == 0:
+                weight = 2
+            elif query_type == 1:
+                 weight = 1
             else:
-                answer = []
+                weight = -1
+            for token in set(query[query_type]):
+                #Activity may not be in word_id_lookup
+                if token not in word_id_lookup:
+                    continue
+                token_id = str(word_id_lookup[token])
+                if token in inverted_index:
+                    query_dict[token] = idf[token_id]
+                    for idx,count in inverted_index[token]:
+                        ranking[idx] += weight * query_dict[token] * count * idf[token_id]
 
-        for token in dislikes:
-            if token in result:
-                docs = [x[0] for x in result[token]]
-                answer = set(filter(lambda x: x not in docs, answer))
+        sum_sq = 0
+        for v in query_dict:
+            sum_sq += query_dict[v] * query_dict[v]
+        norm_q = math.sqrt(sum_sq)
 
-        answer = list(answer)
-        data = answer[:10]
-        data = [inverted_dict_id_name[x] for x in data]
+        for i in range(len(ranking)):
+            if float(doc_norms[i]) != 0 and float(norm_q) != 0:
+                ranking[i] = (ranking[i]/(float(norm_q) * float(doc_norms[i])), i)
+            else:
+                ranking[i] = (0, i)
 
-    else:
-        data = []
+        sorted_ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
+        final_ranking = sorted_ranking[:10]
+        final_ranking = [inverted_dict_id_name[str(x[1])] for x in final_ranking]
+        return final_ranking
 
-
-    # with open ('./data/tfidf.pickle', 'rb') as f:
-    #     tf_idf_transcripts = pickle.load(f)
-    #
-    # with open ('./data/preprocessed_wikivoyage.json') as pwn_file:
-    #     wikivoyage = json.load(pwn_file)
+    data = cos_sim([activities, likes, dislikes])
 
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
+
+# with open ('./data/preprocessed_wikivoyage.json') as pwn_file:
+#     wikivoyage = json.load(pwn_file)
 
 # for p, r in wikivoyage:
 #     tokens = tokenize_listings(r['listings'])
