@@ -9,7 +9,7 @@ with open("./data/name_id_lookup.json", "r") as f:
     results = {}
 
     for key in name_ids:
-        new_key = key.replace("'","%27")
+        #new_key = key.replace("'","%27")
         new_key = urllib.parse.urlencode({'q':key})
 
         url = "https://api.pushshift.io/reddit/search/comment/?&subreddit=travel&fields=score,body&sort_type=score&size=50"
