@@ -14,7 +14,6 @@ tf_transcripts = {}
 word_id_lookup = {}
 tf_idf_transcripts = {}
 name_id_lookup = {}
-output_message = "Hey bitches"
 data = []
 msgs = []
 
@@ -52,7 +51,7 @@ def search():
 
     if not activities or not likes:
         data = []
-        return render_template('search.html', name=project_name, netid=net_id, data=data)
+        return render_template('search.html', data=data)
 
     activities = activities.lower()
     activities = activities.split(",")
@@ -102,4 +101,4 @@ def search():
 
     data = cos_sim([activities, likes, dislikes])
 
-    return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
+    return render_template('search.html', data=data)
