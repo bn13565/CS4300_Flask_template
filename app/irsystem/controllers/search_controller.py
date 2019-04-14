@@ -6,6 +6,7 @@ import json
 from nltk.tokenize import TreebankWordTokenizer
 import string
 import math
+import time
 
 project_name = "Ilan's Cool Project Template"
 net_id = "Ilan Filonenko: if56"
@@ -60,9 +61,11 @@ def search():
     #     tf_idf_transcripts = pickle.load(f)
     #     tfidf_array = tf_idf_transcripts.toarray()
 
-    with open ('./data/tf.pickle', 'rb') as f:
-        tf_transcripts = pickle.load(f)
-        tf_array = tf_transcripts.toarray()
+    #start_time = time.time()
+
+    # with open ('./data/tf.pickle', 'rb') as f:
+    #     tf_transcripts = pickle.load(f)
+    #     tf_array = tf_transcripts.toarray()
 
     with open ('./data/inverted_index.json') as wil_file:
        inverted_index = json.load(wil_file)
@@ -82,15 +85,15 @@ def search():
     with open ('./data/inverted_dict_id_name.json') as wil_file:
         inverted_dict_id_name = json.load(wil_file)
 
-    doc_norms = np.zeros(len(tf_array))
+    with open ('./data/doc_norms.json') as wil_file:
+        doc_norms = json.load(wil_file)
 
-    for key in idf:
-        key_name = inverted_dict_id_word[key]
-        for idx,count in inverted_index[key_name]:
-            score = np.square(count * idf[key])
-            doc_norms[idx] += score
+    #print(time.time() - start_time)
 
-    doc_norms = np.sqrt(doc_norms)
+    #start_time = time.time()
+
+
+    #print(time.time() - start_time)
 
     if not activities or not likes:
         data = []
@@ -132,8 +135,8 @@ def search():
         norm_q = math.sqrt(sum_sq)
 
         for i in range(len(ranking)):
-            if float(doc_norms[i]) != 0 and float(norm_q) != 0:
-                ranking[i] = (ranking[i]/(float(norm_q) * float(doc_norms[i])), i)
+            if float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
+                ranking[i] = (ranking[i]/(float(norm_q) * float(doc_norms[str(i)])), i)
             else:
                 ranking[i] = (0, i)
 
@@ -142,7 +145,9 @@ def search():
         final_ranking = [inverted_dict_id_name[str(x[1])] for x in final_ranking]
         return final_ranking
 
+    #start_time = time.time()
     data = cos_sim([activities, likes, dislikes])
+    #print(time.time() - start_time)
 
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 

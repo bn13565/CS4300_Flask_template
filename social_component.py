@@ -4,6 +4,8 @@ import yaml
 import ast
 import urllib
 import random
+import pickle
+import numpy as np
 
 # with open("./data/name_id_lookup.json", "r") as f:
 #     name_ids = json.load(f)
@@ -66,8 +68,8 @@ import random
 # dict_new = {}
 # lst_new = []
 #
-with open("./data/niche_reddit.json", "r") as f:
-     dict_new = json.load(f)
+# with open("./data/niche_reddit.json", "r") as f:
+#      dict_new = json.load(f)
 #      count_new = 0
 #      for key in dict_new:
 #          num_comments = len(dict_new[key])
@@ -77,17 +79,57 @@ with open("./data/niche_reddit.json", "r") as f:
 #               lst_new.append(key)
 #      print(lst_new)
 
-with open ('./data/preprocessed_wikivoyage_notext.json') as wil_file:
-    places = json.load(wil_file)
+# with open ('./data/preprocessed_wikivoyage_notext.json') as wil_file:
+#     places = json.load(wil_file)
+#
+# inlinks = {}
+# counter = 0
+# for key,value in places.items():
+#     val = value['in_links']
+#     inlinks[key] = 0.0
+#     if val <= 8:
+#         inlinks[key] += 0.25
+#     if val <= 3:
+#         inlinks[key] += 0.50
+#     if key in dict_new:
+#         inlinks[key] += 0.25
 
-inlinks = {}
-counter = 0
-for key,value in places.items():
-    val = value['in_links']
-    inlinks[key] = 0.0
-    if val <= 8:
-        inlinks[key] += 0.25
-    if val <= 3:
-        inlinks[key] += 0.50
-    if key in dict_new:
-        inlinks[key] += 0.25
+with open ('./data/tf.pickle', 'rb') as f:
+    tf_transcripts = pickle.load(f)
+    tf_array = tf_transcripts.toarray()
+
+with open ('./data/inverted_index.json') as wil_file:
+   inverted_index = json.load(wil_file)
+
+with open ('./data/word_id_lookup.json') as wil_file:
+    word_id_lookup = json.load(wil_file)
+
+with open ('./data/name_id_lookup.json') as wil_file:
+    name_id_lookup = json.load(wil_file)
+
+with open ('./data/idf.json') as wil_file:
+   idf = json.load(wil_file)
+
+with open ('./data/inverted_dict_id_word.json') as wil_file:
+    inverted_dict_id_word = json.load(wil_file)
+
+with open ('./data/inverted_dict_id_name.json') as wil_file:
+    inverted_dict_id_name = json.load(wil_file)
+
+doc_norms = np.zeros(len(tf_array))
+doc_norms_dict = {}
+
+for key in idf:
+    key_name = inverted_dict_id_word[key]
+    for idx,count in inverted_index[key_name]:
+        score = np.square(count * idf[key])
+        doc_norms[idx] += score
+
+for i in range(len(doc_norms)):
+    doc_norms_dict[i] = doc_norms[i]
+
+#print(doc_norms_dict)
+
+
+with open("./data/doc_norms.json", "w") as f:
+      json.dump(doc_norms_dict, f)
