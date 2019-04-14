@@ -8,8 +8,6 @@ import string
 import math
 import time
 
-project_name = "Ilan's Cool Project Template"
-net_id = "Ilan Filonenko: if56"
 treebank_tokenizer = TreebankWordTokenizer()
 wikivoyage = {}
 tf_transcripts = {}
@@ -19,29 +17,6 @@ name_id_lookup = {}
 output_message = "Hey bitches"
 data = []
 msgs = []
-
-def tokenize(query):
-    tokenized_query = treebank_tokenizer.tokenize(query.lower())
-    tokenized_set = list(set([x for x in tokenized_query if x not in string.puntuation]))
-
-def tokenize_listings(listing):
-    results = ""
-    eat = listing['eat']
-    for x in eat:
-        results+= x['description']
-    sleep = listing['sleep']
-    for x in sleep:
-        results+= x['description']
-    drink = listing['drink']
-    for x in drink:
-        results+= x['description']
-    do = listing['do']
-    for x in do:
-        results+= x['description']
-    see = listing['see']
-    for x in see:
-        results+= x['description']
-    return tokenize(results)
 
 @irsystem.route('/', methods=['GET'])
 
@@ -53,19 +28,6 @@ def search():
     returnTypes = request.args.get('Returntypes')
     resultsPerPage = request.args.get('Results_per_page')
     page = request.args.get('page')
-
-    tfidf_array = []
-    tf_array = []
-
-    # with open ('./data/tfidf.pickle', 'rb') as f:
-    #     tf_idf_transcripts = pickle.load(f)
-    #     tfidf_array = tf_idf_transcripts.toarray()
-
-    #start_time = time.time()
-
-    # with open ('./data/tf.pickle', 'rb') as f:
-    #     tf_transcripts = pickle.load(f)
-    #     tf_array = tf_transcripts.toarray()
 
     with open ('./data/inverted_index.json') as wil_file:
        inverted_index = json.load(wil_file)
@@ -88,16 +50,9 @@ def search():
     with open ('./data/doc_norms.json') as wil_file:
         doc_norms = json.load(wil_file)
 
-    #print(time.time() - start_time)
-
-    #start_time = time.time()
-
-
-    #print(time.time() - start_time)
-
     if not activities or not likes:
         data = []
-        return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
+        return render_template('search.html', name=project_name, netid=net_id, data=data)
 
     activities = activities.lower()
     activities = activities.split(",")
@@ -145,24 +100,6 @@ def search():
         final_ranking = [inverted_dict_id_name[str(x[1])] for x in final_ranking]
         return final_ranking
 
-    #start_time = time.time()
     data = cos_sim([activities, likes, dislikes])
-    #print(time.time() - start_time)
 
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
-
-
-# with open ('./data/preprocessed_wikivoyage.json') as pwn_file:
-#     wikivoyage = json.load(pwn_file)
-
-# for p, r in wikivoyage:
-#     tokens = tokenize_listings(r['listings'])
-#     msgs.append((p,tokens))
-# result = {}
-# for i in range(len(msgs)):
-#     token_set  = msgs[i][1]
-#     for token in token_set:
-#         if token in result:
-#             result[token].append((msgs[i][0], token_set.count(token)))
-#         else:
-#             result[token]  = ((msgs[i][0], token_set.count(token)))
