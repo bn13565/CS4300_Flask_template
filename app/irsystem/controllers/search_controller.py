@@ -17,10 +17,31 @@ name_id_lookup = {}
 data = []
 msgs = []
 
+<< << << < HEAD
+
 
 @irsystem.route('/', methods=['GET'])
 def search():
-    activities = request.args.get('activities')
+
+
+== == == =
+@irsystem.route('/', methods=['GET'])
+def search_html():
+    data = search(request)
+    return render_template('search.html', data=data)
+
+
+@irsystem.route('/api', methods=['GET'])
+def search_json():
+    data = search(request)
+    return jsonify(data)
+
+
+def search(request):
+
+
+>>>>>> > 3f43ed5bac5f9aba95b32fecc9e0199ecce0a2c9
+   activities = request.args.get('activities')
     likes = request.args.get('likes')
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
@@ -49,7 +70,8 @@ def search():
     with open('./data/doc_norms.json') as wil_file:
         doc_norms = json.load(wil_file)
 
-    with open('./data/nicheness.json') as wil_file:
+<< << << < HEAD
+   with open('./data/nicheness.json') as wil_file:
         niche_value = json.load(wil_file)
 
     with open('./data/combined_reddit.json') as wil_file:
@@ -66,15 +88,20 @@ def search():
 
     if not activities or not likes:
         return render_template('search.html', data=results_list)
+== =====
+   if not activities and not likes:
+        data = []
+        return data
+>>>>>> > 3f43ed5bac5f9aba95b32fecc9e0199ecce0a2c9
 
-    activities = activities.lower()
-    activities = activities.split(",")
+   activities = activities.lower()
+    activities = ' '.join(activities.split(",")).split(" ")
     activities = [x.strip(' ') for x in activities]
     likes = likes.lower()
-    likes = likes.split(",")
+    likes = ' '.join(likes.split(",")).split(" ")
     likes = [x.strip(' ') for x in likes]
     dislikes = dislikes.lower()
-    dislikes = dislikes.split(",")
+    dislikes = ' '.join(dislikes.split(",")).split(" ")
     dislikes = [x.strip(' ') for x in dislikes]
 
     def cos_sim(query):

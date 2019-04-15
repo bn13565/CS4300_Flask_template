@@ -1,118 +1,148 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/main.css">
 </head>
+<!-- https://www.w3schools.com/howto/howto_js_collapsible.asp -->
+<style>
+    .card {
+        margin-bottom: 20px;
+        padding: 20px;
+        min-height: 20%;
+    }
+
+    .background-card {
+        background-repeat: no-repeat;
+        background-size: 100% auto;
+        background-color: rgba(255, 255, 255, 0.8);
+        background-blend-mode: lighten;
+    }
+
+    body {
+        font-family: Futura;
+        color: #4285F4
+    }
+
+    .collapsible-content {
+        padding: 0 18px;
+        background-color: white;
+        overflow: hidden;
+        display:none;
+    }
+</style>
 
 <body>
-
-    <h1 style="font-size: 55px; font-family:Futura; color: #4285F4" class="global-search">
+    <h1 style="font-size: 55px" class="global-search">
         Desti-Nation Matcher
     </h1>
-
     <form>
-
         <!-- Activities Input -->
         <div class=row>
-            <div class="col-md-4"></div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-sm-4 offset-sm-4">
                 <label for="activitiesInput">Activities</label>
-                <input type="text" class="form-control" id="activitiesInput" 
-                    name="activities" placeholder="Skydiving, Kayaking, Hiking">
+                <input type="text" class="form-control" id="activitiesInput" name="activities"
+                    placeholder="Skydiving, Kayaking, Hiking">
                 <small id="activitiesHelp" class="form-text text-muted">
                     List out activities that you're interested in doing on your trip!
                 </small>
             </div>
-            <div class="col-md-4"></div>
         </div>
 
         <!-- Nearby Input -->
         <div class=row>
-            <div class="col-md-4"></div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-sm-4 offset-sm-4">
                 <label for="nearbyInput">Nearby</label>
-                <input type="text" class="form-control" id="nearbyInput" 
-                    name="nearby" placeholder="Paris">
+                <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris">
                 <small id="nearbyHelp" class="form-text text-muted">
                     In or near what city would you like to travel to?
                 </small>
             </div>
-            <div class="col-md-4"></div>
         </div>
 
         <!-- Likes and Dislikes Inputs -->
         <div class=row>
-            <div class="col-md-4"></div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-sm-2 offset-sm-4">
                 <label for="likesInput">Likes</label>
-                <input type="text" class="form-control" id="likesInput" 
-                    name="likes" placeholder="Warm Weather, Mountains">
+                <input type="text" class="form-control" id="likesInput" name="likes"
+                    placeholder="Warm Weather, Mountains">
                 <small id="likesHelp" class="form-text text-muted">
                     What are some things you would like to have in the places you travel to?
                 </small>
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-sm-2">
                 <label for="dislikesInput">Dislikes</label>
-                <input type="text" class="form-control" id="dislikesInput" 
-                    name="dislikes" placeholder="Mosquitos, Heavy Traffic">
+                <input type="text" class="form-control" id="dislikesInput" name="dislikes"
+                    placeholder="Mosquitos, Heavy Traffic">
                 <small id="dislikesHelp" class="form-text text-muted">
                     What are some things you would not like to have in the places you travel to?
                 </small>
             </div>
-            <div class="col-md-4"></div>
         </div>
 
         <!-- Language and Drinking Age Inputs -->
-        <div class=row>
-            <div class="col-md-4"></div>
-            <div class="form-group col-md-2">
+        <!-- <div class=row>
+            <div class="form-group  col-sm-2 offset-sm-4">
                 <label for="languageInput">Language</label>
-                <input type="text" class="form-control" id="languageInput" 
-                    name="language" placeholder="Spanish">
+                <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish">
                 <small id="languageHelp" class="form-text text-muted">
                     What is the dominant language you would like the local populace to speak?
                 </small>
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-sm-2">
                 <label for="drinkingAgeInput">Drinking Age</label>
-                <input type="text" class="form-control" id="drinkingAgeInput" 
-                    name="drinkingAge" placeholder="18">
+                <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18">
                 <small id="drinkingAgeHelp" class="form-text text-muted">
                     What would you like the drinking age of the destination to be?
                 </small>
             </div>
-            <div class="col-md-4"></div>
-        </div>
+        </div> -->
 
         <!-- Submit button -->
-        <div class=row align="center">
-            <button type="submit" class="btn btn-success" align="center">Go!</button>
+        <div style="display: flex; justify-content: center;">
+            <button type="submit" class="btn btn-success" style="text-align:center">Go!</button>
         </div>
 
     </form>
 
     {% if data %}
-        {% for data_idx in range(10) %}
-            <div class="card">
-                <div class="row no-gutters">
-                    <div class="col-md-3"></div>
-                    <div class="col-md-2">
-                        <img src="../static/images/caribbean.jpg" class="card-img img-thumbnail">
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ data[data_idx] }}</h5>
-                            <p class="card-text">This location is amazing!</p>
-                            <p class="card-text"><small class="text-muted">Location selected because it has: kayaking</small></p>
-                        </div>
-                    </div>
-                    <div class="col-md-3"></div>
+    {% for data_idx in range(10) %}
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3 card background-card"
+            style='background-image:url({{ url_for("static", filename="banner.JPG") }})'>
+            <div>
+                <h5 class="card-title">{{ data[data_idx] }}</h5>
+                <br>
+                <br>
+                <br>
+                <p class="card-text">Location selected because it has:</p>
+                <p class="collapsible">Toggle reviews</p>
+                <div class="collapsible-content">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 </div>
             </div>
-        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
     {% endif %}
 
 </body>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
 
 </html>
