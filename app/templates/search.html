@@ -30,6 +30,7 @@
         background-color: white;
         overflow: hidden;
         display:none;
+        color: gray
     }
 </style>
 
@@ -51,7 +52,7 @@
         </div>
 
         <!-- Nearby Input -->
-        <div class=row>
+        <!-- <div class=row>
             <div class="form-group col-sm-4 offset-sm-4">
                 <label for="nearbyInput">Nearby</label>
                 <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris">
@@ -59,7 +60,7 @@
                     In or near what city would you like to travel to?
                 </small>
             </div>
-        </div>
+        </div> -->
 
         <!-- Likes and Dislikes Inputs -->
         <div class=row>
@@ -112,16 +113,19 @@
         <div class="col-sm-6 offset-sm-3 card background-card"
             style='background-image:url({{ url_for("static", filename="banner.JPG") }})'>
             <div>
-                <h5 class="card-title">{{ data[data_idx] }}</h5>
+                <h5 class="card-title"><a href="{{ data[data_idx]['url'] }}">{{ data[data_idx]['name'] }}</a></h5>
+                <br>
+                <span>Similarity: {{ data[data_idx]['sim'] }}</span>
+                <span>     </span>
+                <span>Nicheness: {{ data[data_idx]['nicheness'] }}</span>
                 <br>
                 <br>
-                <br>
-                <p class="card-text">Location selected because it has:</p>
-                <p class="collapsible">Toggle reviews</p>
+                <!-- <p class="card-text">Location selected because it has:</p> -->
+                <p class="collapsible">Toggle relevant comments</p>
                 <div class="collapsible-content">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    {% for i in data[data_idx]['reviews'] %}
+                    <p>{{ (i[:500] + "...") if i|length > 500 else i }}</p>
+                    {% endfor %}              
                 </div>
             </div>
         </div>
