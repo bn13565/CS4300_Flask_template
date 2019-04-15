@@ -52,7 +52,7 @@
         </div>
 
         <!-- Nearby Input -->
-        <!-- <div class=row>
+        <div class=row>
             <div class="form-group col-sm-4 offset-sm-4">
                 <label for="nearbyInput">Nearby</label>
                 <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris">
@@ -60,7 +60,7 @@
                     In or near what city would you like to travel to?
                 </small>
             </div>
-        </div> -->
+        </div>
 
         <!-- Likes and Dislikes Inputs -->
         <div class=row>
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Language and Drinking Age Inputs -->
-        <!-- <div class=row>
+        <div class=row>
             <div class="form-group  col-sm-2 offset-sm-4">
                 <label for="languageInput">Language</label>
                 <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish">
@@ -98,7 +98,7 @@
                     What would you like the drinking age of the destination to be?
                 </small>
             </div>
-        </div> -->
+        </div>
 
         <!-- Submit button -->
         <div style="display: flex; justify-content: center;">
@@ -125,7 +125,7 @@
                 <div class="collapsible-content">
                     {% for i in data[data_idx]['reviews'] %}
                     <p>{{ (i[:500] + "...") if i|length > 500 else i }}</p>
-                    {% endfor %}              
+                    {% endfor %}
                 </div>
             </div>
         </div>
