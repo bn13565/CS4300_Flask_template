@@ -18,8 +18,16 @@ data = []
 msgs = []
 
 @irsystem.route('/', methods=['GET'])
+def search_html():
+    data = search(request)
+    return render_template('search.html', data=data)
 
-def search():
+@irsystem.route('/api', methods=['GET'])
+def search_json():
+    data = search(request)
+    return jsonify(data)
+
+def search(request):
     activities = request.args.get('activities')
     likes = request.args.get('likes')
     dislikes = request.args.get('dislikes')
@@ -51,7 +59,7 @@ def search():
 
     if not activities or not likes:
         data = []
-        return render_template('search.html', data=data)
+        return data
 
     activities = activities.lower()
     activities = activities.split(",")
@@ -100,5 +108,4 @@ def search():
         return final_ranking
 
     data = cos_sim([activities, likes, dislikes])
-
-    return render_template('search.html', data=data)
+    return data
