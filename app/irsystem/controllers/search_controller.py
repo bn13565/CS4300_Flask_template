@@ -57,7 +57,7 @@ def search(request):
     with open ('./data/doc_norms.json') as wil_file:
         doc_norms = json.load(wil_file)
 
-    if not activities or not likes:
+    if not activities and not likes:
         data = []
         return data
 
@@ -98,7 +98,8 @@ def search(request):
 
         for i in range(len(ranking)):
             if float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
-                ranking[i] = (ranking[i]/(float(norm_q) * float(doc_norms[str(i)])), i)
+                # temporary - sqrt of doc norm to not only have small articles
+                ranking[i] = (ranking[i]/(float(norm_q) * math.sqrt(float(doc_norms[str(i)]))), i)
             else:
                 ranking[i] = (0, i)
 
