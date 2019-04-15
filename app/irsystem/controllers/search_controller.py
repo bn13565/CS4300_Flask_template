@@ -3,12 +3,11 @@ from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 import pickle
 import json
-from nltk.tokenize import TreebankWordTokenizer
 import string
 import math
 import time
+import re
 
-treebank_tokenizer = TreebankWordTokenizer()
 wikivoyage = {}
 tf_transcripts = {}
 word_id_lookup = {}
@@ -65,6 +64,9 @@ def search():
     with open('./data/combined_reddit.json') as wil_file:
         reviews_data = json.load(wil_file)
 
+    with open('./data/preprocessed_wikivoyage_lite.json') as wil_file:
+        wikivoyage_lite = json.load(wil_file)
+
     # results
     results_list = []
     # entry fields
@@ -78,14 +80,11 @@ def search():
         return render_template('search.html', data=results_list)
 
     activities = activities.lower()
-    activities = ' '.join(activities.split(",")).split(" ")
-    activities = [x.strip(' ') for x in activities]
+    activities = re.findall(r'[^,\s]+', activities)
     likes = likes.lower()
-    likes = ' '.join(likes.split(",")).split(" ")
-    likes = [x.strip(' ') for x in likes]
+    likes = re.findall(r'[^,\s]+', likes)
     dislikes = dislikes.lower()
-    dislikes = ' '.join(dislikes.split(",")).split(" ")
-    dislikes = [x.strip(' ') for x in dislikes]
+    likes = re.findall(r'[^,\s]+', dislikes)
 
     def cos_sim(query):
         query_dict = {}
@@ -114,11 +113,14 @@ def search():
         norm_q = math.sqrt(sum_sq)
 
         for i in range(len(ranking)):
-            if float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
-                ranking[i] = (ranking[i]/(float(norm_q) *
-                                          float(doc_norms[str(i)])), i)
+            if wikivoyage_lite[inverted_dict_id_name[str(i)]]['valid'] == True:
+                if float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
+                    ranking[i] = (ranking[i]/(float(norm_q) *
+                                              float(doc_norms[str(i)])), i)
+                else:
+                    ranking[i] = (0, i)
             else:
-                ranking[i] = (0, i)
+                ranking[i] = (0,i)
 
         sorted_ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
         final_ranking = sorted_ranking[:50]
@@ -139,25 +141,16 @@ def search():
     top_10 = sim_sorted_by_niche[:10]
 
     def get_reviews(locs):
-        revs = []
-        if reviews_data[locs] == []:
-            revs
-        elif len(reviews_data[locs]) <= 3:
-            for i in range(len(reviews_data[locs])):
-                revs.append(reviews_data[locs][0]['body'])
-        else:
-            for i in range(3):
-                revs.append(reviews_data[locs][0]['body'])
+        revs = [x['body'] for x in reviews_data[locs]]
         return revs
 
     for loc in top_10:
-        print(loc)
         entry = {}
-        entry[name] = loc[0]
+        entry[name] = wikivoyage_lite[loc[0]]['title']
         entry[reviews] = get_reviews(loc[0])
         entry[nicheness] = loc[1]
         entry[sim] = loc[2]
-        entry[url] = ""
+        entry[url] = wikivoyage_lite[loc[0]]['url']
         results_list.append(entry)
 
     data = results_list
