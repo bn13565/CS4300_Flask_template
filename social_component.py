@@ -58,8 +58,8 @@ import numpy as np
 #     #     print("oops " + key)
 #     if counter_niche % 500 == 0:
 #         print(counter_niche)
-    # if counter_niche == 10:
-    #     break
+# if counter_niche == 10:
+#     break
 
 
 # with open("./data/niche_reddit.json", "w") as f:
@@ -129,18 +129,18 @@ import numpy as np
 # with open("./data/display_name_url.json", "w") as f:
 #       json.dump(display_names, f)
 
-reddit_shortened = {}
+# reddit_shortened = {}
 
-with open ('./data/reddit.json') as wil_file:
-     reviews = json.load(wil_file)
+# with open('./data/reddit.json') as wil_file:
+#     reviews = json.load(wil_file)
 
-for key in reviews:
-    if len(reviews[key]) > 5:
-        reddit_shortened[key] = reviews[key][:5]
-    else:
-        reddit_shortened[key] = reviews[key]
+# for key in reviews:
+#     if len(reviews[key]) > 5:
+#         reddit_shortened[key] = reviews[key][:5]
+#     else:
+#         reddit_shortened[key] = reviews[key]
 
-#urllib.parse.quote("bora bora")
+# urllib.parse.quote("bora bora")
 
 #
 # doc_norms = np.zeros(len(tf_array))
@@ -158,5 +158,27 @@ for key in reviews:
 # #print(doc_norms_dict)
 #
 #
-with open("./data/reddit_shortened.json", "w") as f:
-      json.dump(reddit_shortened, f)
+# with open("./data/reddit_shortened.json", "w") as f:
+#     json.dump(reddit_shortened, f)
+
+
+with open('./data/combined_reddit.json') as wil_file:
+    reviews_data = json.load(wil_file)
+
+
+def get_reviews(locs):
+    revs = []
+  #   print(reviews_data['poncha springs'])
+    if reviews_data[locs] == []:
+            # print(3)
+        revs
+    elif len(reviews_data[locs]) <= 3:
+        for i in range(len(reviews_data[locs])):
+            revs.append(reviews_data[locs][0]['body'])
+    else:
+        for i in range(3):
+            revs.append(reviews_data[locs][0]['body'])
+    return revs
+
+
+print(get_reviews("poncha springs"))
