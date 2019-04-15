@@ -62,13 +62,13 @@ def search(request):
         return data
 
     activities = activities.lower()
-    activities = activities.split(",")
+    activities =' '.join(activities.split(",")).split(" ")
     activities = [x.strip(' ') for x in activities]
     likes = likes.lower()
-    likes = likes.split(",")
+    likes = ' '.join(likes.split(",")).split(" ")
     likes = [x.strip(' ') for x in likes]
     dislikes = dislikes.lower()
-    dislikes = dislikes.split(",")
+    dislikes = ' '.join(dislikes.split(",")).split(" ")
     dislikes = [x.strip(' ') for x in dislikes]
 
     def cos_sim(query):
