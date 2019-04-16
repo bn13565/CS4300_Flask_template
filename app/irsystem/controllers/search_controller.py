@@ -26,7 +26,6 @@ def search():
     data = []
 
     with open('./data/new_inverted_index.json') as wil_file:
-        # hello world
         inverted_index = json.load(wil_file)
 
     with open('./data/word_id_lookup.json') as wil_file:
@@ -128,8 +127,8 @@ def search():
                     continue
                 token_id = str(word_id_lookup[token])
                 if token in inverted_index:
-                    for idx, count in inverted_index[token]:
-                        ranking[idx] += weight * count
+                    for idx in inverted_index[token]:
+                        ranking[idx] += weight
 
         for i in range(len(ranking)):
             if wikivoyage_lite[inverted_dict_id_name[str(i)]]['valid']:
