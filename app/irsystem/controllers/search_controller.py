@@ -25,7 +25,8 @@ def search():
     name_id_lookup = {}
     data = []
 
-    with open('./data/inverted_index.json') as wil_file:
+    with open('./data/new_inverted_index.json') as wil_file:
+        # hello world
         inverted_index = json.load(wil_file)
 
     with open('./data/word_id_lookup.json') as wil_file:
