@@ -165,20 +165,29 @@ import numpy as np
 with open('./data/combined_reddit.json') as wil_file:
     reviews_data = json.load(wil_file)
 
+for key in reviews_data:
+    reviews_data[key] = reviews_data[key][0]['body']
+    reviews_data[key] = reviews_data[key][:100]
 
-def get_reviews(locs):
-    revs = []
-  #   print(reviews_data['poncha springs'])
-    if reviews_data[locs] == []:
-            # print(3)
-        revs
-    elif len(reviews_data[locs]) <= 3:
-        for i in range(len(reviews_data[locs])):
-            revs.append(reviews_data[locs][0]['body'])
-    else:
-        for i in range(3):
-            revs.append(reviews_data[locs][0]['body'])
-    return revs
+print(reviews_data)
+
+with open('./data/new_combined_reddit.json', "w") as f:
+    json.dump(reviews_data, f)
 
 
-print(get_reviews("poncha springs"))
+# def get_reviews(locs):
+#     revs = []
+#   #   print(reviews_data['poncha springs'])
+#     if reviews_data[locs] == []:
+#             # print(3)
+#         revs
+#     elif len(reviews_data[locs]) <= 3:
+#         for i in range(len(reviews_data[locs])):
+#             revs.append(reviews_data[locs][0]['body'])
+#     else:
+#         for i in range(3):
+#             revs.append(reviews_data[locs][0]['body'])
+#     return revs
+
+
+#print(get_reviews("poncha springs"))

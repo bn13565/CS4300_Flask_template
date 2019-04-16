@@ -49,7 +49,7 @@ def search():
     with open('./data/nicheness.json') as wil_file:
         niche_value = json.load(wil_file)
 
-    with open('./data/combined_reddit.json') as wil_file:
+    with open('./data/new_combined_reddit.json') as wil_file:
         reviews_data = json.load(wil_file)
 
     with open('./data/preprocessed_wikivoyage_lite.json') as wil_file:
@@ -156,7 +156,7 @@ def search():
     top_10 = sim_sorted_by_niche[:15]
 
     def get_reviews(locs):
-        revs = [x['body'] for x in reviews_data[locs]]
+        revs = [reviews_data[locs]]
         return revs
 
     for loc in top_10:
