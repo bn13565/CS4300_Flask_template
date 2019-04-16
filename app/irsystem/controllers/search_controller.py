@@ -1,4 +1,5 @@
 from . import *
+from app import *
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 import pickle
@@ -7,6 +8,7 @@ import string
 import math
 import time
 import re
+from nltk.stem import WordNetLemmatizer
 
 @irsystem.route('/', methods=['GET'])
 def search():
@@ -15,44 +17,50 @@ def search():
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
     returnTypes = request.args.get('Returntypes')
-    resultsPerPage = request.args.get('Results_per_page')
-    page = request.args.get('page')
+    wnl = WordNetLemmatizer()
 
-    wikivoyage = {}
-    tf_transcripts = {}
-    word_id_lookup = {}
-    tf_idf_transcripts = {}
-    name_id_lookup = {}
-    data = []
+    if not activities and not likes:
+        return render_template('search.html', data=[])
 
-    with open('./data/inverted_index.json') as wil_file:
+    inverted_index = None 
+    word_id_lookup = None 
+    name_id_lookup = None
+    idf = None
+    inverted_dict_id_word = None
+    inverted_dict_id_name = None
+    doc_norms = None
+    niche_value = None
+    reviews_data = None
+    wikivoyage_lite = None
+
+    with app.open_resource('static/data/inverted_index.json') as wil_file:
         inverted_index = json.load(wil_file)
 
-    with open('./data/word_id_lookup.json') as wil_file:
+    with app.open_resource('static/data/word_id_lookup.json') as wil_file:
         word_id_lookup = json.load(wil_file)
 
-    with open('./data/name_id_lookup.json') as wil_file:
+    with app.open_resource('static/data/name_id_lookup.json') as wil_file:
         name_id_lookup = json.load(wil_file)
 
-    with open('./data/idf.json') as wil_file:
+    with app.open_resource('static/data/idf.json') as wil_file:
         idf = json.load(wil_file)
 
-    with open('./data/inverted_dict_id_word.json') as wil_file:
+    with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
         inverted_dict_id_word = json.load(wil_file)
 
-    with open('./data/inverted_dict_id_name.json') as wil_file:
+    with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
         inverted_dict_id_name = json.load(wil_file)
 
-    with open('./data/doc_norms.json') as wil_file:
+    with app.open_resource('static/data/doc_norms.json') as wil_file:
         doc_norms = json.load(wil_file)
 
-    with open('./data/nicheness.json') as wil_file:
+    with app.open_resource('static/data/nicheness.json') as wil_file:
         niche_value = json.load(wil_file)
 
-    with open('./data/new_combined_reddit.json') as wil_file:
+    with app.open_resource('static/data/new_combined_reddit.json') as wil_file:
         reviews_data = json.load(wil_file)
 
-    with open('./data/preprocessed_wikivoyage_lite.json') as wil_file:
+    with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
         wikivoyage_lite = json.load(wil_file)
 
     # results
@@ -63,9 +71,6 @@ def search():
     nicheness = "nicheness"
     sim = "sim"
     url = "url"
-
-    if not activities and not likes:
-        return render_template('search.html', data=results_list)
 
     activities = activities.lower()
     activities = re.findall(r'[^,\s]+', activities)
@@ -85,6 +90,7 @@ def search():
             else:
                 weight = -1
             for token in set(query[query_type]):
+                token = wnl.lemmatize(token)
                 # Activity may not be in word_id_lookup
                 if token not in word_id_lookup:
                     continue
@@ -101,7 +107,7 @@ def search():
         norm_q = math.sqrt(sum_sq)
 
         for i in range(len(ranking)):
-            if wikivoyage_lite[inverted_dict_id_name[str(i)]]['valid'] and float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
+            if inverted_dict_id_name[str(i)] in wikivoyage_lite and float(doc_norms[str(i)]) != 0 and float(norm_q) != 0:
                 ranking[i] = (ranking[i]/(float(norm_q) * float(doc_norms[str(i)])), i)
             else:
                 ranking[i] = (0,i)
@@ -130,14 +136,10 @@ def search():
                     for idx, count in inverted_index[token]:
                         ranking[idx] += weight * count
 
-        for i in range(len(ranking)):
-            if wikivoyage_lite[inverted_dict_id_name[str(i)]]['valid']:
-                ranking[i] = (ranking[i], i)
-            else:
-                ranking[i] = (0,i)
+        ranking = [(ranking[i], i) for i in range(len(ranking)) if inverted_dict_id_name[str(i)] in wikivoyage_lite]
 
         sorted_ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
-        final_ranking = sorted_ranking[:30]
+        final_ranking = sorted_ranking[:20]
         final_ranking = [
             (inverted_dict_id_name[str(x[1])], x[0]) for x in final_ranking]
         return final_ranking
@@ -153,10 +155,10 @@ def search():
     # sort by niche value
     sim_sorted_by_niche = sorted(
         sim_niche_list, key=lambda x: x[1], reverse=True)
-    top_10 = sim_sorted_by_niche[:15]
+    top_10 = sim_sorted_by_niche[:10]
 
     def get_reviews(locs):
-        revs = [reviews_data[locs]]
+        revs = reviews_data[locs]
         return revs
 
     for loc in top_10:

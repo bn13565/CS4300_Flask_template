@@ -7,3 +7,4 @@ vagrant/site.retry
 vagrant/a4keypair.pem
 data
 .DS_Store
+*.DS_Store
