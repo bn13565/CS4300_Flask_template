@@ -8,7 +8,7 @@ counter = 0
 for key in data:
   results[key] = data[key]
   counter += 1
-  if counter == 1000:
+  if counter == 5000:
     break
 
 with open('new_inverted_index.json', 'w') as wil_file:\
