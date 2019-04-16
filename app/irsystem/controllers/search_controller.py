@@ -156,7 +156,7 @@ def search():
     top_10 = sim_sorted_by_niche[:15]
 
     def get_reviews(locs):
-        revs = [reviews_data[locs]]
+        revs = reviews_data[locs]
         return revs
 
     for loc in top_10:
