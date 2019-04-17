@@ -105,6 +105,7 @@ def search():
     nicheness = "nicheness"
     sim = "sim"
     url = "url"
+    sentiment = "sentiment"
 
     activities = activities.lower()
     activities = re.findall(r'[^,\s]+', activities)
@@ -201,6 +202,7 @@ def search():
         entry[reviews] = get_reviews(loc[0])
         entry[nicheness] = str(round(loc[1],2))
         entry[sim] = str(round(loc[2],2))
+        entry[sentiment] = str(round(sentiments[loc[0]],2)) 
         entry[url] = wikivoyage_lite[loc[0]]['url']
         results_list.append(entry)
 
