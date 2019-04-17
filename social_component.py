@@ -1,11 +1,7 @@
 import json
-import requests
-import yaml
-import ast
-import urllib
-import random
 import pickle
 import numpy as np
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 # with open("./data/name_id_lookup.json", "r") as f:
 #     name_ids = json.load(f)
@@ -94,9 +90,7 @@ import numpy as np
 #     if key in dict_new:
 #         inlinks[key] += 0.25
 
-# with open ('./data/tf.pickle', 'rb') as f:
-#     tf_transcripts = pickle.load(f)
-#     tf_array = tf_transcripts.toarray()
+
 #
 # with open ('./data/inverted_index.json') as wil_file:
 #    inverted_index = json.load(wil_file)
@@ -162,17 +156,76 @@ import numpy as np
 #     json.dump(reddit_shortened, f)
 
 
+#
+# with open ('./data/tf.pickle', 'rb') as f:
+#     tf_transcripts = pickle.load(f)
+#     tf_array = tf_transcripts.toarray()
+#
+# # tf_array = np.load('./data/tf.npy')
+#
+# with open('./data/inverted_dict_id_name.json') as wil_file:
+#     inverted_dict_id_name = json.load(wil_file)
+#
+# with open('./data/word_id_lookup.json') as wil_file:
+#     words = json.load(wil_file)
+#
+# with open('./data/wikivoyage_lite_relevant.json') as wil_file:
+#     relevant = json.load(wil_file)
+# print(len(relevant))
+
+
+
+# for i in range(len(tf_array)):
+#     if inverted_dict_id_name[str(i)] in relevant:
+#         for j in range(len(tf_array[0])):
+#             if tf_array[i][j] > 0:
+#                 token = str(j)
+#                 if token in result:
+#                         result[token].append((i,int(tf_array[i][j])))
+#                 else:
+#                     result[token] = [(i, int(tf_array[i][j]))]
+#
+# #print(result)
+#
+# with open('./data/inverted_dict_id_word.json', "w") as f:
+#     json.dump(result, f)
+#
+sid = SentimentIntensityAnalyzer()
+
 with open('./data/combined_reddit.json') as wil_file:
     reviews_data = json.load(wil_file)
 
+#
+#for key in reviews_data:
+#     reviews_data[key] = reviews_data[key][:3]
+#     reviews_data[key] = [x['body'][:300] for x in reviews_data[key]]
+    #reviews_data[key] = [reviews_data[key][i][:300]]
+
+results = {}
+count = 0
 for key in reviews_data:
-    reviews_data[key] = reviews_data[key][0]['body']
-    reviews_data[key] = reviews_data[key][:100]
 
-print(reviews_data)
+    agg_score = 0.0
+    for i in range(len(reviews_data[key])):
+        if (reviews_data[key][i]['body'] != "No reviews available for this place"):
+            sentiments = sid.polarity_scores(reviews_data[key][i]['body'])
+            reviews_data[key][i] = (reviews_data[key][i]['body'], sentiments['compound'])
+            agg_score += sentiments['compound']
+        else:
+            reviews_data[key][i] = (reviews_data[key][i]['body'], 0.0)
 
-with open('./data/new_combined_reddit.json', "w") as f:
-    json.dump(reviews_data, f)
+    agg_score = float(agg_score)/len(reviews_data[key])
+    results[key] = agg_score
+
+
+
+#
+with open('./data/place_sentiments.json', "w") as f:
+    json.dump(results, f)
+# sentiments = sid.polarity_scores(tStr)
+
+
+
 
 
 # def get_reviews(locs):
