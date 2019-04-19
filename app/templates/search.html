@@ -1,9 +1,17 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+    <script src="/static/bootstrap-tagsinput.js"></script>
+    <script src="/static/topics.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/typeahead.css">
+    <link rel="stylesheet" href="/static/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <!-- https://www.w3schools.com/howto/howto_js_collapsible.asp -->
 <style>
@@ -29,8 +37,24 @@
         padding: 0 18px;
         background-color: white;
         overflow: hidden;
-        display:none;
+        display: none;
         color: gray
+    }
+
+    .checked {
+        color: orange;
+    }
+
+    .collapsible:hover {
+        color: skyblue;
+    }
+
+    a:hover {
+        color: skyblue;
+    }
+
+    input {
+        width: 100%
     }
 </style>
 
@@ -66,8 +90,7 @@
         <div class=row>
             <div class="form-group col-sm-2 offset-sm-4">
                 <label for="likesInput">Likes</label>
-                <input type="text" class="form-control" id="likesInput" name="likes"
-                    placeholder="Cold, Mountains">
+                <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains">
                 <small id="likesHelp" class="form-text text-muted">
                     What are some things you would like to have in the places you travel to?
                 </small>
@@ -106,6 +129,14 @@
         </div>
 
     </form>
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            TEST TYPEAHEAD
+            <input id="test" class="typeahead" data-role="tagsinput"></input>
+            TEST TAG INPUT
+            <input data-role="tagsinput"></input>
+        </div>
+    </div>
 
     {% if data %}
     {% for data_idx in range(10) %}
@@ -113,22 +144,23 @@
         <div class="col-sm-6 offset-sm-3 card background-card"
             style='background-image:url({{ url_for("static", filename="banner.JPG") }})'>
             <div>
-                <h5 class="card-title"><a href="{{ data[data_idx]['url'] }}">{{ data[data_idx]['name'] }}</a></h5>
-                <br>
-                <span>Similarity: {{ data[data_idx]['sim'] }}</span>
-                <span>     </span>
-                <span>Nicheness: {{ data[data_idx]['nicheness'] }}</span>
-                <span>     </span>
-                <span>Sentiment: {{ data[data_idx]['sentiment'] }}</span>
-                <br>
-                <br>
-                <!-- <p class="card-text">Location selected because it has:</p> -->
-                <p class="collapsible">Toggle relevant comments</p>
-                <div class="collapsible-content">
-                    {% for i in data[data_idx]['reviews'] %}
-                    <p>{{ (i[:500] + "...") if i|length > 500 else i }}</p>
-                    {% endfor %}
-                </div>
+                <h4 class="card-title"><a href="{{ data[data_idx]['url'] }}">{{ data[data_idx]['name'] }}</a></h5>
+                    <br>
+                    <span>Similarity Score: </span>
+                    {{ data[data_idx]['sim_stars']|safe }}
+                    <span> Nicheness Score: </span>
+                    {{ data[data_idx]['nicheness_stars']|safe }}
+                    <span> Destination Type: {{ data[data_idx]['type'] }}</span>
+                    <br>
+                    <br>
+                    <!-- <p class="card-text">Location selected because it has:</p> -->
+                    <p class="collapsible">Toggle relevant comments</p>
+                    <div class="collapsible-content">
+                        {% for i in data[data_idx]['reviews'] %}
+                        <p style='background-color:{{ "#DAF7A6" if i[1] >= 0.5 else "#FEE081" }}'>
+                            {{ (i[0][:299] + "...") if i[0]|length > 299 else i[0] }}</p>
+                        {% endfor %}
+                    </div>
             </div>
         </div>
     </div>
@@ -139,6 +171,7 @@
 <script>
     var coll = document.getElementsByClassName("collapsible");
 
+    //collapsible
     for (var i = 0; i < coll.length; i++) {
         coll[i].addEventListener("click", function () {
             var content = this.nextElementSibling;
@@ -149,6 +182,26 @@
             }
         });
     }
+
+    //typeahead
+    var topics = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: topicsList.map((t) => {
+            return {
+                "name": t
+            };
+        }),
+    });
+    topics.initialize();
+    $('#test').tagsinput({
+        typeaheadjs: {
+            name: 'topics',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: topics.ttAdapter()
+        }
+    });
 </script>
 
 </html>

@@ -10,102 +10,107 @@ import time
 import re
 from nltk.stem import WordNetLemmatizer
 
+inverted_index = None
+word_id_lookup = None
+name_id_lookup = None
+idf = None
+inverted_dict_id_word = None
+inverted_dict_id_name = None
+doc_norms = None
+niche_value = None
+reviews_data = None
+wikivoyage_lite = None
+sentiments = None
+
+def load_data():
+    global inverted_index
+    global word_id_lookup
+    global name_id_lookup
+    global idf
+    global inverted_dict_id_word
+    global inverted_dict_id_name
+    global doc_norms
+    global niche_value
+    global reviews_data
+    global wikivoyage_lite
+    global sentiments
+    print("loading data")
+    with app.open_resource('static/data/inverted_index.json') as wil_file:
+        inverted_index = json.load(wil_file)
+
+    with app.open_resource('static/data/word_id_lookup.json') as wil_file:
+        word_id_lookup = json.load(wil_file)
+
+    with app.open_resource('static/data/name_id_lookup.json') as wil_file:
+        name_id_lookup = json.load(wil_file)
+
+    with app.open_resource('static/data/idf.json') as wil_file:
+        idf = json.load(wil_file)
+
+    with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
+        inverted_dict_id_word = json.load(wil_file)
+
+    with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
+        inverted_dict_id_name = json.load(wil_file)
+
+    with app.open_resource('static/data/doc_norms.json') as wil_file:
+        doc_norms = json.load(wil_file)
+
+    with app.open_resource('static/data/nicheness.json') as wil_file:
+        niche_value = json.load(wil_file)
+
+    with app.open_resource('static/data/combined_reddit_sentiment.json') as wil_file:
+        reviews_data = json.load(wil_file)
+
+    with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
+        wikivoyage_lite = json.load(wil_file)
+    
+    with app.open_resource('static/data/place_sentiments.json') as wil_file:
+        sentiments = json.load(wil_file)
+    print("data loaded!")
+
+#in: score between 0-1
+#out: html stars, rounded to nearest .1
+def getStars(score):
+    stars = []
+    checked_star = '<span class="fa fa-star checked"></span>'
+    unchecked_star = '<span class="fa fa-star"></span>'
+    stars.append(checked_star if score > 0.1 else unchecked_star)
+    stars.append(checked_star if score > 0.3 else unchecked_star)
+    stars.append(checked_star if score > 0.5 else unchecked_star)
+    stars.append(checked_star if score > 0.7 else unchecked_star)
+    stars.append(checked_star if score > 0.9 else unchecked_star)
+    return "".join(stars)
+
+def format_type(t):
+    if t == "intinerary":
+        return "Itinerary"
+    if t == "smallcity":
+        return "Small City"
+    if t == "bigcity":
+        return "Big City"
+    if t == "district":
+        return "District"
+    if t == "park":
+        return "Park"
+    if t == "region":
+        return "Region"
+    return "Unknown"
+
 @irsystem.route('/', methods=['GET'])
 def search():
     activities = request.args.get('activities')
     likes = request.args.get('likes')
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
-    returnTypes = request.args.get('Returntypes')
+    returnTypes = request.args.get('returntypes')
     wnl = WordNetLemmatizer()
 
     if not activities and not likes:
         return render_template('search.html', data=[])
 
-    inverted_index = None
-    word_id_lookup = None
-    name_id_lookup = None
-    idf = None
-    inverted_dict_id_word = None
-    inverted_dict_id_name = None
-    doc_norms = None
-    niche_value = None
-    reviews_data = None
-    wikivoyage_lite = None
-    sentiments = None
-
-    # with app.open_resource('static/data/inverted_index.json') as wil_file:
-    #     inverted_index = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/word_id_lookup.json') as wil_file:
-    #     word_id_lookup = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/name_id_lookup.json') as wil_file:
-    #     name_id_lookup = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/idf.json') as wil_file:
-    #     idf = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
-    #     inverted_dict_id_word = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
-    #     inverted_dict_id_name = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/doc_norms.json') as wil_file:
-    #     doc_norms = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/nicheness.json') as wil_file:
-    #     niche_value = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/new_combined_reddit.json') as wil_file:
-    #     reviews_data = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
-    #     wikivoyage_lite = json.load(wil_file)
-
-    with open('./data/inverted_index.json') as wil_file:
-        inverted_index = json.load(wil_file)
-
-    with open('./data/word_id_lookup.json') as wil_file:
-        word_id_lookup = json.load(wil_file)
-
-    with open('./data/name_id_lookup.json') as wil_file:
-        name_id_lookup = json.load(wil_file)
-
-    with open('./data/idf.json') as wil_file:
-        idf = json.load(wil_file)
-
-    with open('./data/inverted_dict_id_word.json') as wil_file:
-        inverted_dict_id_word = json.load(wil_file)
-
-    with open('./data/inverted_dict_id_name.json') as wil_file:
-        inverted_dict_id_name = json.load(wil_file)
-
-    with open('./data/doc_norms.json') as wil_file:
-        doc_norms = json.load(wil_file)
-
-    with open('./data/nicheness.json') as wil_file:
-        niche_value = json.load(wil_file)
-
-    with open('./data/combined_reddit_sentiment.json') as wil_file:
-        reviews_data = json.load(wil_file)
-
-    with open('./data/wikivoyage_lite_relevant.json') as wil_file:
-        wikivoyage_lite = json.load(wil_file)
-
-    with open('./data/place_sentiments.json') as wil_file:
-        sentiments = json.load(wil_file)
-
     # results
     results_list = []
-    # entry fields
-    name = "name"
-    reviews = "reviews"
-    nicheness = "nicheness"
-    sim = "sim"
-    url = "url"
-    sentiment = "sentiment"
 
     activities = activities.lower()
     activities = re.findall(r'[^,\s]+', activities)
@@ -113,6 +118,21 @@ def search():
     likes = re.findall(r'[^,\s]+', likes)
     dislikes = dislikes.lower()
     dislikes = re.findall(r'[^,\s]+', dislikes)
+
+    global inverted_index
+    global word_id_lookup
+    global name_id_lookup
+    global idf
+    global inverted_dict_id_word
+    global inverted_dict_id_name
+    global doc_norms
+    global niche_value
+    global reviews_data
+    global wikivoyage_lite
+    global sentiments
+
+    if not doc_norms:
+        load_data()
 
     def cos_sim(query):
         query_dict = {}
@@ -161,7 +181,7 @@ def search():
             elif query_type == 1:
                 weight = 1
             else:
-                weight = -1
+                weight = -2
             for token in set(query[query_type]):
                 # Activity may not be in word_id_lookup
                 if token not in word_id_lookup:
@@ -193,19 +213,30 @@ def search():
     top_10 = sim_sorted_by_niche[:10]
 
     def get_reviews(locs):
-        revs = [x[0] for x in reviews_data[locs]]
+        revs = [x for x in reviews_data[locs]]
         return revs
 
+    maxSim = max([l[2] for l in top_10])
+    
     for loc in top_10:
         entry = {}
-        entry[name] = wikivoyage_lite[loc[0]]['title']
-        entry[reviews] = get_reviews(loc[0])
-        entry[nicheness] = str(round(loc[1],2))
-        entry[sim] = str(round(loc[2],2))
-        entry[sentiment] = str(round(sentiments[loc[0]],2)) 
-        entry[url] = wikivoyage_lite[loc[0]]['url']
+        entry["name"] = wikivoyage_lite[loc[0]]['title']
+        entry["reviews"] = get_reviews(loc[0])
+        entry["sim_stars"] = getStars(loc[2]/maxSim)
+        entry["sentiment"] = str(int(sentiments[loc[0]] * 100))
+        entry["url"] = wikivoyage_lite[loc[0]]['url']
+        entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
+        entry['nicheness_stars'] = getStars(loc[1])
         results_list.append(entry)
 
     data = results_list
 
-    return render_template('search.html', data=data)
+    form_data = {
+        "activities" : request.args.get('activities'),
+        "likes" : request.args.get('likes'),
+        "dislikes" : request.args.get('dislikes'),
+        "nearby" : request.args.get('nearby'),
+        "returnTypes" : request.args.get('returntypes')
+    }
+
+    return render_template('search.html', data=data, form_data=form_data)
