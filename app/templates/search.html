@@ -6,6 +6,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script src="/static/bootstrap-tagsinput.js"></script>
     <script src="/static/topics.js"></script>
+    
+    <!-- Required to run Bootstrap js (such as the collapse feature for Advanced Search -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/main.css">
@@ -76,7 +82,7 @@
     </h1>
     <form>
         <!-- Activities Input -->
-        <div class=row>
+        <div class="row">
             <div class="form-group col-sm-4 offset-sm-4">
                 <label for="activitiesInput">Activities</label>
                 <input type="text" class="form-control" id="activitiesInput" name="activities"
@@ -87,57 +93,69 @@
             </div>
         </div>
 
-        <!-- Nearby Input -->
-        <div class=row>
-            <div class="form-group col-sm-4 offset-sm-4">
-                <label for="nearbyInput">Nearby</label>
-                <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris"
-                    value="{{ form_data['nearby'] if  form_data['nearby'] }}">
-                <small id="nearbyHelp" class="form-text text-muted">
-                    In or near what city would you like to travel to?
-                </small>
+        <!-- Advanced Search Toggle Button -->
+        <div style="display: flex; justify-content: center;">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#advancedSearch" aria-expanded="true" aria-controls="advancedSearch">
+                Advanced Search
+            </button>
+        </div>
+
+        <!-- Advanced Search -->
+        <div class="collapse" id="advancedSearch">
+            <!-- Nearby Input -->
+            <div class="row">
+                <div class="form-group col-sm-4 offset-sm-4">
+                    <label for="nearbyInput">Nearby</label>
+                    <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris"
+                        value="{{ form_data['nearby'] if  form_data['nearby'] }}">
+                    <small id="nearbyHelp" class="form-text text-muted">
+                        In or near what city would you like to travel to?
+                    </small>
+                </div>
+            </div>
+
+            <!-- Likes and Dislikes Inputs -->
+            <div class="row">
+                <div class="form-group col-sm-2 offset-sm-4">
+                    <label for="likesInput">Likes</label>
+                    <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains"
+                        value="{{ form_data['likes'] if  form_data['likes'] }}">
+                    <small id="likesHelp" class="form-text text-muted">
+                        What are some things you would like to have in the places you travel to?
+                    </small>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label for="dislikesInput">Dislikes</label>
+                    <input type="text" class="form-control" id="dislikesInput" name="dislikes"
+                        placeholder="Mosquito, Traffic" value="{{ form_data['dislikes'] if  form_data['dislikes'] }}">
+                    <small id="dislikesHelp" class="form-text text-muted">
+                        What are some things you would not like to have in the places you travel to?
+                    </small>
+                </div>
+            </div>
+
+                <!-- Language and Drinking Age Inputs -->
+            <div class="row">
+                <div class="form-group  col-sm-2 offset-sm-4">
+                    <label for="languageInput">Language</label>
+                    <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish"
+                        value="{{ form_data['language'] if form_data['language'] }}">
+                    <small id="languageHelp" class="form-text text-muted">
+                        What is the dominant language you would like the local populace to speak?
+                    </small>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label for="drinkingAgeInput">Drinking Age</label>
+                    <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18"
+                        value="{{ form_data['drinkingAge'] if  form_data['drinkingAge'] }}">
+                    <small id="drinkingAgeHelp" class="form-text text-muted">
+                        What would you like the drinking age of the destination to be?
+                    </small>
+                </div>
             </div>
         </div>
 
-        <!-- Likes and Dislikes Inputs -->
-        <div class=row>
-            <div class="form-group col-sm-2 offset-sm-4">
-                <label for="likesInput">Likes</label>
-                <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains"
-                    value="{{ form_data['likes'] if  form_data['likes'] }}">
-                <small id="likesHelp" class="form-text text-muted">
-                    What are some things you would like to have in the places you travel to?
-                </small>
-            </div>
-            <div class="form-group col-sm-2">
-                <label for="dislikesInput">Dislikes</label>
-                <input type="text" class="form-control" id="dislikesInput" name="dislikes"
-                    placeholder="Mosquito, Traffic" value="{{ form_data['dislikes'] if  form_data['dislikes'] }}">
-                <small id="dislikesHelp" class="form-text text-muted">
-                    What are some things you would not like to have in the places you travel to?
-                </small>
-            </div>
-        </div>
-
-        <!-- Language and Drinking Age Inputs -->
-        <div class=row>
-            <div class="form-group  col-sm-2 offset-sm-4">
-                <label for="languageInput">Language</label>
-                <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish"
-                    value="{{ form_data['language'] if  form_data['language'] }}">
-                <small id="languageHelp" class="form-text text-muted">
-                    What is the dominant language you would like the local populace to speak?
-                </small>
-            </div>
-            <div class="form-group col-sm-2">
-                <label for="drinkingAgeInput">Drinking Age</label>
-                <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18"
-                    value="{{ form_data['drinkingAge'] if  form_data['drinkingAge'] }}">
-                <small id="drinkingAgeHelp" class="form-text text-muted">
-                    What would you like the drinking age of the destination to be?
-                </small>
-            </div>
-        </div>
+        <div class="mb-3"></div>
 
         <!-- Submit button -->
         <div style="display: flex; justify-content: center;">
@@ -145,14 +163,14 @@
         </div>
 
     </form>
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-6 offset-md-3">
             TEST TYPEAHEAD
             <input id="test" class="typeahead" data-role="tagsinput"></input>
             TEST TAG INPUT
             <input data-role="tagsinput"></input>
         </div>
-    </div>
+    </div> -->
 
     {% if data %}
     {% for data_idx in range(10) %}
