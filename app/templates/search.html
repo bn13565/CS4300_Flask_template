@@ -15,6 +15,13 @@
 </head>
 <!-- https://www.w3schools.com/howto/howto_js_collapsible.asp -->
 <style>
+    ::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: silver;
+        opacity: 0.5;
+        /* Firefox */
+    }
+
     .card {
         margin-bottom: 20px;
         padding: 20px;
@@ -24,7 +31,7 @@
     .background-card {
         background-repeat: no-repeat;
         background-size: 100% auto;
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.5);
         background-blend-mode: lighten;
     }
 
@@ -56,6 +63,11 @@
     input {
         width: 100%
     }
+
+    .content {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
 </style>
 
 <body>
@@ -68,7 +80,7 @@
             <div class="form-group col-sm-4 offset-sm-4">
                 <label for="activitiesInput">Activities</label>
                 <input type="text" class="form-control" id="activitiesInput" name="activities"
-                    placeholder="Kayaking, Hiking">
+                    placeholder="Kayaking, Hiking" value="{{ form_data['activities'] if  form_data['activities']  }}">
                 <small id="activitiesHelp" class="form-text text-muted">
                     List out activities that you're interested in doing on your trip!
                 </small>
@@ -79,7 +91,8 @@
         <div class=row>
             <div class="form-group col-sm-4 offset-sm-4">
                 <label for="nearbyInput">Nearby</label>
-                <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris">
+                <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris"
+                    value="{{ form_data['nearby'] if  form_data['nearby'] }}">
                 <small id="nearbyHelp" class="form-text text-muted">
                     In or near what city would you like to travel to?
                 </small>
@@ -90,7 +103,8 @@
         <div class=row>
             <div class="form-group col-sm-2 offset-sm-4">
                 <label for="likesInput">Likes</label>
-                <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains">
+                <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains"
+                    value="{{ form_data['likes'] if  form_data['likes'] }}">
                 <small id="likesHelp" class="form-text text-muted">
                     What are some things you would like to have in the places you travel to?
                 </small>
@@ -98,7 +112,7 @@
             <div class="form-group col-sm-2">
                 <label for="dislikesInput">Dislikes</label>
                 <input type="text" class="form-control" id="dislikesInput" name="dislikes"
-                    placeholder="Mosquito, Traffic">
+                    placeholder="Mosquito, Traffic" value="{{ form_data['dislikes'] if  form_data['dislikes'] }}">
                 <small id="dislikesHelp" class="form-text text-muted">
                     What are some things you would not like to have in the places you travel to?
                 </small>
@@ -109,14 +123,16 @@
         <div class=row>
             <div class="form-group  col-sm-2 offset-sm-4">
                 <label for="languageInput">Language</label>
-                <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish">
+                <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish"
+                    value="{{ form_data['language'] if  form_data['language'] }}">
                 <small id="languageHelp" class="form-text text-muted">
                     What is the dominant language you would like the local populace to speak?
                 </small>
             </div>
             <div class="form-group col-sm-2">
                 <label for="drinkingAgeInput">Drinking Age</label>
-                <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18">
+                <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18"
+                    value="{{ form_data['drinkingAge'] if  form_data['drinkingAge'] }}">
                 <small id="drinkingAgeHelp" class="form-text text-muted">
                     What would you like the drinking age of the destination to be?
                 </small>
@@ -142,25 +158,29 @@
     {% for data_idx in range(10) %}
     <div class="row">
         <div class="col-sm-6 offset-sm-3 card background-card"
-            style='background-image:url({{ url_for("static", filename="banner.JPG") }})'>
+            style='background-image:url({{ data[data_idx]["image"] }})'>
             <div>
-                <h4 class="card-title"><a href="{{ data[data_idx]['url'] }}">{{ data[data_idx]['name'] }}</a></h5>
-                    <br>
+                <span>
+                    <h4 class="card-title"><a class = "content" href="{{ data[data_idx]['url'] }}">{{ data[data_idx]['name'] }}</a>  <span class = "badge">{{ data[data_idx]['type'] }}</span></h4>
+                </span>
+                <span class=content>
                     <span>Similarity Score: </span>
                     {{ data[data_idx]['sim_stars']|safe }}
+                    <br>
                     <span> Nicheness Score: </span>
                     {{ data[data_idx]['nicheness_stars']|safe }}
-                    <span> Destination Type: {{ data[data_idx]['type'] }}</span>
                     <br>
                     <br>
-                    <!-- <p class="card-text">Location selected because it has:</p> -->
-                    <p class="collapsible">Toggle relevant comments</p>
-                    <div class="collapsible-content">
-                        {% for i in data[data_idx]['reviews'] %}
-                        <p style='background-color:{{ "#DAF7A6" if i[1] >= 0.5 else "#FEE081" }}'>
-                            {{ (i[0][:299] + "...") if i[0]|length > 299 else i[0] }}</p>
-                        {% endfor %}
-                    </div>
+                    <br>
+                </span>
+                <!-- <p class="card-text">Location selected because it has:</p> -->
+                <span class="collapsible content">Toggle relevant comments</span>
+                <div class="collapsible-content">
+                    {% for i in data[data_idx]['reviews'] %}
+                    <p style='background-color:{{ "#DAF7A6" if i[1] >= 0.5 else "#FEE081" }}'>
+                        {{ (i[0][:299] + "...") if i[0]|length > 299 else i[0] }}</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

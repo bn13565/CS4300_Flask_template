@@ -21,6 +21,7 @@ niche_value = None
 reviews_data = None
 wikivoyage_lite = None
 sentiments = None
+images = None
 
 def load_data():
     global inverted_index
@@ -34,6 +35,7 @@ def load_data():
     global reviews_data
     global wikivoyage_lite
     global sentiments
+    global images
     print("loading data")
     with app.open_resource('static/data/inverted_index.json') as wil_file:
         inverted_index = json.load(wil_file)
@@ -67,6 +69,9 @@ def load_data():
     
     with app.open_resource('static/data/place_sentiments.json') as wil_file:
         sentiments = json.load(wil_file)
+    
+    with app.open_resource('static/data/images.json') as wil_file:
+        images = json.load(wil_file)
     print("data loaded!")
 
 #in: score between 0-1
@@ -104,10 +109,23 @@ def search():
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
     returnTypes = request.args.get('returntypes')
+    drinkingAge = request.args.get('drinkingAge'),
+    language = request.args.get('language')
+
+    form_data = {
+        "activities" : request.args.get('activities'),
+        "likes" : request.args.get('likes'),
+        "dislikes" : request.args.get('dislikes'),
+        "nearby" : request.args.get('nearby'),
+        "language" : request.args.get('language'),
+        "drinkingAge" : request.args.get('drinkingAge'),
+        "returnTypes" : request.args.get('returntypes')
+    }
+
     wnl = WordNetLemmatizer()
 
     if not activities and not likes:
-        return render_template('search.html', data=[])
+        return render_template('search.html', data=[], form_data=form_data)
 
     # results
     results_list = []
@@ -227,16 +245,9 @@ def search():
         entry["url"] = wikivoyage_lite[loc[0]]['url']
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
+        entry['image'] = images[loc[0]].split(" ")[0]
         results_list.append(entry)
 
     data = results_list
-
-    form_data = {
-        "activities" : request.args.get('activities'),
-        "likes" : request.args.get('likes'),
-        "dislikes" : request.args.get('dislikes'),
-        "nearby" : request.args.get('nearby'),
-        "returnTypes" : request.args.get('returntypes')
-    }
 
     return render_template('search.html', data=data, form_data=form_data)
