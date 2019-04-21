@@ -36,43 +36,78 @@ def load_data():
     global wikivoyage_lite
     global sentiments
     global images
-    print("loading data")
-    with app.open_resource('static/data/inverted_index.json') as wil_file:
+    #print("loading data")
+    # with app.open_resource('static/data/inverted_index.json') as wil_file:
+    #     inverted_index = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/word_id_lookup.json') as wil_file:
+    #     word_id_lookup = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/name_id_lookup.json') as wil_file:
+    #     name_id_lookup = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/idf.json') as wil_file:
+    #     idf = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
+    #     inverted_dict_id_word = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
+    #     inverted_dict_id_name = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/doc_norms.json') as wil_file:
+    #     doc_norms = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/nicheness.json') as wil_file:
+    #     niche_value = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/combined_reddit_sentiment.json') as wil_file:
+    #     reviews_data = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
+    #     wikivoyage_lite = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/place_sentiments.json') as wil_file:
+    #     sentiments = json.load(wil_file)
+    #
+    # with app.open_resource('static/data/images.json') as wil_file:
+    #     images = json.load(wil_file)
+    #print("data loaded!")
+    with open('./data/inverted_index.json') as wil_file:
         inverted_index = json.load(wil_file)
 
-    with app.open_resource('static/data/word_id_lookup.json') as wil_file:
+    with open('./data/word_id_lookup.json') as wil_file:
         word_id_lookup = json.load(wil_file)
 
-    with app.open_resource('static/data/name_id_lookup.json') as wil_file:
+    with open('./data/name_id_lookup.json') as wil_file:
         name_id_lookup = json.load(wil_file)
 
-    with app.open_resource('static/data/idf.json') as wil_file:
+    with open('./data/idf.json') as wil_file:
         idf = json.load(wil_file)
 
-    with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
+    with open('./data/inverted_dict_id_word.json') as wil_file:
         inverted_dict_id_word = json.load(wil_file)
 
-    with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
+    with open('./data/inverted_dict_id_name.json') as wil_file:
         inverted_dict_id_name = json.load(wil_file)
 
-    with app.open_resource('static/data/doc_norms.json') as wil_file:
+    with open('./data/doc_norms.json') as wil_file:
         doc_norms = json.load(wil_file)
 
-    with app.open_resource('static/data/nicheness.json') as wil_file:
+    with open('./data/nicheness.json') as wil_file:
         niche_value = json.load(wil_file)
 
-    with app.open_resource('static/data/combined_reddit_sentiment.json') as wil_file:
+    with open('./data/combined_reddit_sentiment.json') as wil_file:
         reviews_data = json.load(wil_file)
 
-    with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
+    with open('./data/wikivoyage_lite_relevant.json') as wil_file:
         wikivoyage_lite = json.load(wil_file)
-    
-    with app.open_resource('static/data/place_sentiments.json') as wil_file:
+
+    with open('./data/place_sentiments.json') as wil_file:
         sentiments = json.load(wil_file)
-    
-    with app.open_resource('static/data/images.json') as wil_file:
+
+    with open('./data/images.json') as wil_file:
         images = json.load(wil_file)
-    print("data loaded!")
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
@@ -235,7 +270,7 @@ def search():
         return revs
 
     maxSim = max([l[2] for l in top_10])
-    
+
     for loc in top_10:
         entry = {}
         entry["name"] = wikivoyage_lite[loc[0]]['title']
