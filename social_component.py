@@ -190,10 +190,10 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 # with open('./data/inverted_dict_id_word.json', "w") as f:
 #     json.dump(result, f)
 #
-sid = SentimentIntensityAnalyzer()
-
-with open('./data/combined_reddit.json') as wil_file:
-    reviews_data = json.load(wil_file)
+# sid = SentimentIntensityAnalyzer()
+#
+# with open('./data/combined_reddit.json') as wil_file:
+#     reviews_data = json.load(wil_file)
 
 #
 #for key in reviews_data:
@@ -201,32 +201,41 @@ with open('./data/combined_reddit.json') as wil_file:
 #     reviews_data[key] = [x['body'][:300] for x in reviews_data[key]]
     #reviews_data[key] = [reviews_data[key][i][:300]]
 
-results = {}
-count = 0
-for key in reviews_data:
-
-    agg_score = 0.0
-    for i in range(len(reviews_data[key])):
-        if (reviews_data[key][i]['body'] != "No reviews available for this place"):
-            sentiments = sid.polarity_scores(reviews_data[key][i]['body'])
-            reviews_data[key][i] = (reviews_data[key][i]['body'], sentiments['compound'])
-            agg_score += sentiments['compound']
-        else:
-            reviews_data[key][i] = (reviews_data[key][i]['body'], 0.0)
-
-    agg_score = float(agg_score)/len(reviews_data[key])
-    results[key] = agg_score
+# results = {}
+# count = 0
+# for key in reviews_data:
+#
+#     agg_score = 0.0
+#     for i in range(len(reviews_data[key])):
+#         if (reviews_data[key][i]['body'] != "No reviews available for this place"):
+#             sentiments = sid.polarity_scores(reviews_data[key][i]['body'])
+#             reviews_data[key][i] = (reviews_data[key][i]['body'], sentiments['compound'])
+#             agg_score += sentiments['compound']
+#         else:
+#             reviews_data[key][i] = (reviews_data[key][i]['body'], 0.0)
+#
+#     agg_score = float(agg_score)/len(reviews_data[key])
+#     results[key] = agg_score
 
 
 
 #
-with open('./data/place_sentiments.json', "w") as f:
-    json.dump(results, f)
+# with open('./data/place_sentiments.json', "w") as f:
+#     json.dump(results, f)
 # sentiments = sid.polarity_scores(tStr)
 
 
+with open('./data/wikivoyage_lite_relevant.json') as wil_file:
+    wikivoyage_lite = json.load(wil_file)
 
+for key in wikivoyage_lite:
+    for place in wikivoyage_lite[key]['nearby_links']:
+        if place in wikivoyage_lite and key not in wikivoyage_lite[place]['nearby_links']:
+            wikivoyage_lite[place]['nearby_links'].append(key)
 
+#print(wikivoyage_lite)
+with open('./data/new_wiki.json', "w") as f:
+    json.dump(wikivoyage_lite, f)
 
 # def get_reviews(locs):
 #     revs = []

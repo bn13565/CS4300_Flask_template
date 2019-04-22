@@ -144,7 +144,7 @@ def search():
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
     returnTypes = request.args.get('returntypes')
-    drinkingAge = request.args.get('drinkingAge'),
+    drinkingAge = request.args.get('drinkingAge')
     language = request.args.get('language')
 
     form_data = {
@@ -171,6 +171,15 @@ def search():
     likes = re.findall(r'[^,\s]+', likes)
     dislikes = dislikes.lower()
     dislikes = re.findall(r'[^,\s]+', dislikes)
+    if nearby is None:
+        nearby = ''
+    if drinkingAge  is None:
+        drinkingAge = ''
+    if language is None:
+        language = ''
+    nearby = nearby.lower()
+    drinkingAge = drinkingAge.lower()
+    language = language.lower()
 
     global inverted_index
     global word_id_lookup
@@ -187,9 +196,42 @@ def search():
     if not doc_norms:
         load_data()
 
+    def advanced_search(ranking, is_boolean_search):
+        nearby_weight = 10.0
+        language_weight = 0.8
+        drinking_weight = 0.8
+
+        if is_boolean_search:
+
+            if nearby != '':
+                for place in wikivoyage_lite[nearby]["nearby_links"]:
+                    if place in name_id_lookup:
+                        place_id = name_id_lookup[place]
+                        ranking[place_id] *= nearby_weight
+
+            if language != '':
+                for place in wikivoyage_lite:
+                    if place in name_id_lookup:
+                        if language not in wikivoyage_lite[place]['languages']:
+                            place_id = name_id_lookup[place]
+                            ranking[place_id] *= language_weight
+
+            if drinkingAge != '':
+                age = int(drinkingAge)
+                for place in wikivoyage_lite:
+                    if place in name_id_lookup:
+                        if wikivoyage_lite[place]['drinking'] is None or wikivoyage_lite[place]['drinking'] == 0:
+                            continue
+                        elif wikivoyage_lite[place]['drinking'] > age:
+                            place_id = name_id_lookup[place]
+                            ranking[place_id] *= drinking_weight
+
+
+        return ranking
+
     def cos_sim(query):
         query_dict = {}
-        ranking = [0] * len(doc_norms)
+        ranking = [0] * 25381
         for query_type in range(len(query)):
             if query_type == 0:
                 weight = 2
@@ -206,8 +248,9 @@ def search():
                 if str(word_id_lookup[token]) in inverted_index:
                     query_dict[token] = idf[token_id]
                     for idx, count in inverted_index[str(word_id_lookup[token])]:
-                        ranking[idx] += weight * \
-                            query_dict[token] * count * idf[token_id]
+                        if str(idx) in inverted_dict_id_name:
+                            ranking[idx] += weight * \
+                                query_dict[token] * count * idf[token_id]
 
         sum_sq = 0
         for v in query_dict:
@@ -220,6 +263,7 @@ def search():
             else:
                 ranking[i] = (0,i)
 
+        ranking = advanced_search(ranking, False)
         sorted_ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
         final_ranking = sorted_ranking[:50]
         final_ranking = [
@@ -227,7 +271,7 @@ def search():
         return final_ranking
 
     def boolean_search(query):
-        ranking = [0] * len(doc_norms)
+        ranking = [0] * 25381
         for query_type in range(len(query)):
             if query_type == 0:
                 weight = 2
@@ -242,8 +286,10 @@ def search():
                 token_id = str(word_id_lookup[token])
                 if str(word_id_lookup[token])  in inverted_index:
                     for idx, count in inverted_index[str(word_id_lookup[token])]:
-                        ranking[idx] += weight * count
+                        if str(idx) in inverted_dict_id_name:
+                            ranking[idx] += weight * count
 
+        ranking = advanced_search(ranking, True)
         ranking = [(ranking[i], i) for i in range(len(ranking)) if inverted_dict_id_name[str(i)] in wikivoyage_lite]
 
         sorted_ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
