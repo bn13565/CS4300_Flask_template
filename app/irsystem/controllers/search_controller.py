@@ -36,43 +36,8 @@ def load_data():
     global wikivoyage_lite
     global sentiments
     global images
-    #print("loading data")
-    # with app.open_resource('static/data/inverted_index.json') as wil_file:
-    #     inverted_index = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/word_id_lookup.json') as wil_file:
-    #     word_id_lookup = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/name_id_lookup.json') as wil_file:
-    #     name_id_lookup = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/idf.json') as wil_file:
-    #     idf = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/inverted_dict_id_word.json') as wil_file:
-    #     inverted_dict_id_word = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/inverted_dict_id_name.json') as wil_file:
-    #     inverted_dict_id_name = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/doc_norms.json') as wil_file:
-    #     doc_norms = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/nicheness.json') as wil_file:
-    #     niche_value = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/combined_reddit_sentiment.json') as wil_file:
-    #     reviews_data = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/wikivoyage_lite_relevant.json') as wil_file:
-    #     wikivoyage_lite = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/place_sentiments.json') as wil_file:
-    #     sentiments = json.load(wil_file)
-    #
-    # with app.open_resource('static/data/images.json') as wil_file:
-    #     images = json.load(wil_file)
-    #print("data loaded!")
+    print("loading data")
+    
     with open('./data/inverted_index.json') as wil_file:
         inverted_index = json.load(wil_file)
 
@@ -108,6 +73,7 @@ def load_data():
 
     with open('./data/images.json') as wil_file:
         images = json.load(wil_file)
+    print("data loaded!")
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
@@ -126,9 +92,9 @@ def format_type(t):
     if t == "intinerary":
         return "Itinerary"
     if t == "smallcity":
-        return "Small City"
+        return "Town"
     if t == "bigcity":
-        return "Big City"
+        return "City"
     if t == "district":
         return "District"
     if t == "park":
@@ -316,7 +282,7 @@ def search():
         revs = [x for x in reviews_data[locs]]
         return revs
 
-    maxSim = max([l[2] for l in top_10])
+    maxSim = max([l[2] for l in top_10]+[1])
 
     for loc in top_10:
         entry = {}
