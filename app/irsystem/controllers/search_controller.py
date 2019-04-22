@@ -158,6 +158,10 @@ def search():
     global reviews_data
     global wikivoyage_lite
     global sentiments
+    global images
+    global base_url
+
+    base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
 
     if not doc_norms:
         load_data()
@@ -293,7 +297,7 @@ def search():
         entry["url"] = wikivoyage_lite[loc[0]]['url']
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
-        entry['image'] = images[loc[0]].split(" ")[0]
+        entry['image'] = base_url + images[loc[0]].split(" ")[0]
         results_list.append(entry)
 
     data = results_list
