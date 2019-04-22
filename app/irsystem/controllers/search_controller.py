@@ -204,10 +204,11 @@ def search():
         if is_boolean_search:
 
             if nearby != '':
-                for place in wikivoyage_lite[nearby]["nearby_links"]:
-                    if place in name_id_lookup:
-                        place_id = name_id_lookup[place]
-                        ranking[place_id] *= nearby_weight
+                if nearby in wikivoyage_lite:
+                    for place in wikivoyage_lite[nearby]["nearby_links"]:
+                        if place in name_id_lookup:
+                            place_id = name_id_lookup[place]
+                            ranking[place_id] *= nearby_weight
 
             if language != '':
                 for place in wikivoyage_lite:
