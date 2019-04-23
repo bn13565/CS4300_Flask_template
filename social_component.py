@@ -225,17 +225,43 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 # sentiments = sid.polarity_scores(tStr)
 
 
-with open('./data/wikivoyage_lite_relevant.json') as wil_file:
-    wikivoyage_lite = json.load(wil_file)
+with open('./data/word_id_lookup.json') as wil_file:
+    lookup = json.load(wil_file)
 
-for key in wikivoyage_lite:
-    for place in wikivoyage_lite[key]['nearby_links']:
-        if place in wikivoyage_lite and key not in wikivoyage_lite[place]['nearby_links']:
-            wikivoyage_lite[place]['nearby_links'].append(key)
+with open('./data/inverted_index.json') as wil_file:
+    inverted = json.load(wil_file)
 
-#print(wikivoyage_lite)
-with open('./data/new_wiki.json', "w") as f:
-    json.dump(wikivoyage_lite, f)
+with open('./data/words.json') as wil_file:
+    words = json.load(wil_file)
+
+lst = words.split(",")
+
+ids = []
+
+for i in lst:
+    if i in lookup:
+        ids.append(str(lookup[i]))
+
+new_inverted = {}
+
+for key in inverted:
+    if key in ids:
+        new_inverted[key] = inverted[key]
+
+#print(len(new_inverted))
+
+with open('./data/trimmed_inverted_index.json', "w") as f:
+    json.dump(new_inverted, f)
+
+
+# for key in wikivoyage_lite:
+#     for place in wikivoyage_lite[key]['nearby_links']:
+#         if place in wikivoyage_lite and key not in wikivoyage_lite[place]['nearby_links']:
+#             wikivoyage_lite[place]['nearby_links'].append(key)
+#
+# #print(wikivoyage_lite)
+# with open('./data/new_wiki.json', "w") as f:
+#     json.dump(wikivoyage_lite, f)
 
 # def get_reviews(locs):
 #     revs = []

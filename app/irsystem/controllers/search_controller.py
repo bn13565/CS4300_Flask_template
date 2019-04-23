@@ -36,9 +36,9 @@ def load_data():
     global wikivoyage_lite
     global sentiments
     global images
-    print("loading data")
-    
-    with open('./data/inverted_index.json') as wil_file:
+    #print("loading data")
+
+    with open('./data/trimmed_inverted_index.json') as wil_file:
         inverted_index = json.load(wil_file)
 
     with open('./data/word_id_lookup.json') as wil_file:
@@ -73,7 +73,7 @@ def load_data():
 
     with open('./data/images.json') as wil_file:
         images = json.load(wil_file)
-    print("data loaded!")
+    #print("data loaded!")
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
