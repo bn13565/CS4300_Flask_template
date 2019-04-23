@@ -20,7 +20,7 @@ doc_norms = None
 niche_value = None
 reviews_data = None
 wikivoyage_lite = None
-sentiments = None
+#sentiments = None
 images = None
 
 def load_data():
@@ -34,7 +34,7 @@ def load_data():
     global niche_value
     global reviews_data
     global wikivoyage_lite
-    global sentiments
+    #global sentiments
     global images
     #print("loading data")
 
@@ -68,8 +68,8 @@ def load_data():
     with open('./data/wikivoyage_lite_relevant.json') as wil_file:
         wikivoyage_lite = json.load(wil_file)
 
-    with open('./data/place_sentiments.json') as wil_file:
-        sentiments = json.load(wil_file)
+    #with open('./data/place_sentiments.json') as wil_file:
+        #sentiments = json.load(wil_file)
 
     with open('./data/images.json') as wil_file:
         images = json.load(wil_file)
@@ -157,7 +157,7 @@ def search():
     global niche_value
     global reviews_data
     global wikivoyage_lite
-    global sentiments
+    #global sentiments
     global images
     global base_url
 
@@ -293,7 +293,7 @@ def search():
         entry["name"] = wikivoyage_lite[loc[0]]['title']
         entry["reviews"] = get_reviews(loc[0])
         entry["sim_stars"] = getStars(loc[2]/maxSim)
-        entry["sentiment"] = str(int(sentiments[loc[0]] * 100))
+        #entry["sentiment"] = str(int(sentiments[loc[0]] * 100))
         entry["url"] = wikivoyage_lite[loc[0]]['url']
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
