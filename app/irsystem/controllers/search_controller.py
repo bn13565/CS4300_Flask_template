@@ -20,60 +20,40 @@ doc_norms = None
 niche_value = None
 reviews_data = None
 wikivoyage_lite = None
-#sentiments = None
 images = None
 
-def load_data():
-    global inverted_index
-    global word_id_lookup
-    global name_id_lookup
-    global idf
-    global inverted_dict_id_word
-    global inverted_dict_id_name
-    global doc_norms
-    global niche_value
-    global reviews_data
-    global wikivoyage_lite
-    #global sentiments
-    global images
-    #print("loading data")
+with open('./data/trimmed_inverted_index.json') as wil_file:
+    inverted_index = json.load(wil_file)
 
-    with open('./data/trimmed_inverted_index.json') as wil_file:
-        inverted_index = json.load(wil_file)
+with open('./data/word_id_lookup.json') as wil_file:
+    word_id_lookup = json.load(wil_file)
 
-    with open('./data/word_id_lookup.json') as wil_file:
-        word_id_lookup = json.load(wil_file)
+with open('./data/name_id_lookup.json') as wil_file:
+    name_id_lookup = json.load(wil_file)
 
-    with open('./data/name_id_lookup.json') as wil_file:
-        name_id_lookup = json.load(wil_file)
+with open('./data/idf.json') as wil_file:
+    idf = json.load(wil_file)
 
-    with open('./data/idf.json') as wil_file:
-        idf = json.load(wil_file)
+with open('./data/inverted_dict_id_word.json') as wil_file:
+    inverted_dict_id_word = json.load(wil_file)
 
-    with open('./data/inverted_dict_id_word.json') as wil_file:
-        inverted_dict_id_word = json.load(wil_file)
+with open('./data/inverted_dict_id_name.json') as wil_file:
+    inverted_dict_id_name = json.load(wil_file)
 
-    with open('./data/inverted_dict_id_name.json') as wil_file:
-        inverted_dict_id_name = json.load(wil_file)
+with open('./data/doc_norms.json') as wil_file:
+    doc_norms = json.load(wil_file)
 
-    with open('./data/doc_norms.json') as wil_file:
-        doc_norms = json.load(wil_file)
+with open('./data/nicheness.json') as wil_file:
+    niche_value = json.load(wil_file)
 
-    with open('./data/nicheness.json') as wil_file:
-        niche_value = json.load(wil_file)
+with open('./data/combined_reddit_sentiment.json') as wil_file:
+    reviews_data = json.load(wil_file)
 
-    with open('./data/combined_reddit_sentiment.json') as wil_file:
-        reviews_data = json.load(wil_file)
+with open('./data/wikivoyage_lite_relevant.json') as wil_file:
+    wikivoyage_lite = json.load(wil_file)
 
-    with open('./data/wikivoyage_lite_relevant.json') as wil_file:
-        wikivoyage_lite = json.load(wil_file)
-
-    #with open('./data/place_sentiments.json') as wil_file:
-        #sentiments = json.load(wil_file)
-
-    with open('./data/images.json') as wil_file:
-        images = json.load(wil_file)
-    #print("data loaded!")
+with open('./data/images.json') as wil_file:
+    images = json.load(wil_file)
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
@@ -109,9 +89,12 @@ def search():
     likes = request.args.get('likes')
     dislikes = request.args.get('dislikes')
     nearby = request.args.get('nearby')
-    returnTypes = request.args.get('returntypes')
     drinkingAge = request.args.get('drinkingAge')
     language = request.args.get('language')
+
+    #radio for if we should use nicheness in ranking
+    use_nicheness = request.args.get('useNicheness')
+    use_nicheness = True if use_nicheness == "y" else False
 
     form_data = {
         "activities" : request.args.get('activities'),
@@ -119,8 +102,7 @@ def search():
         "dislikes" : request.args.get('dislikes'),
         "nearby" : request.args.get('nearby'),
         "language" : request.args.get('language'),
-        "drinkingAge" : request.args.get('drinkingAge'),
-        "returnTypes" : request.args.get('returntypes')
+        "drinkingAge" : request.args.get('drinkingAge')
     }
 
     wnl = WordNetLemmatizer()
@@ -146,6 +128,8 @@ def search():
     nearby = nearby.lower()
     drinkingAge = drinkingAge.lower()
     language = language.lower()
+
+    # print(activities, likes, dislikes)
 
     global inverted_index
     global word_id_lookup
@@ -209,7 +193,7 @@ def search():
             elif query_type == 1:
                 weight = 1
             else:
-                weight = -1
+                weight = -2
             for token in set(query[query_type]):
                 token = wnl.lemmatize(token)
                 # Activity may not be in word_id_lookup
@@ -271,16 +255,19 @@ def search():
 
     #data = cos_sim([activities, likes, dislikes])
     data = boolean_search([activities, likes, dislikes])
-
+    # print(data[:25])
     sim_niche_list = []
     for loc in data:
         niche_score = niche_value[loc[0]]
         sim_niche_list.append((loc[0], niche_score, loc[1]))
-
-    # sort by niche value
-    sim_sorted_by_niche = sorted(
-        sim_niche_list, key=lambda x: x[1], reverse=True)
-    top_10 = sim_sorted_by_niche[:10]
+    top_10 = None
+    if use_nicheness:
+        # sort by niche value
+        sim_sorted_by_niche = sorted(
+            sim_niche_list, key=lambda x: x[1], reverse=True)
+        top_10 = sim_sorted_by_niche[:10]
+    else:
+        top_10 = sim_niche_list[:10]
 
     def get_reviews(locs):
         revs = [x for x in reviews_data[locs]]
@@ -289,12 +276,16 @@ def search():
     maxSim = max([l[2] for l in top_10]+[1])
 
     for loc in top_10:
+        l = wikivoyage_lite[loc[0]]['languages']
+        d = wikivoyage_lite[loc[0]]['drinking']
         entry = {}
         entry["name"] = wikivoyage_lite[loc[0]]['title']
         entry["reviews"] = get_reviews(loc[0])
         entry["sim_stars"] = getStars(loc[2]/maxSim)
         #entry["sentiment"] = str(int(sentiments[loc[0]] * 100))
         entry["url"] = wikivoyage_lite[loc[0]]['url']
+        entry["drinking"] = d if d else "unknown"
+        entry["languages"] = ", ".join(l) if len(l) != 0 else "unknown" 
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
         entry['image'] = base_url + images[loc[0]].split(" ")[0]
