@@ -22,6 +22,7 @@ reviews_data = None
 wikivoyage_lite = None
 images = None
 autocomplete_words = None
+quuery_expansion = None
 
 with open('./data/trimmed_inverted_index.json') as wil_file:
     inverted_index = json.load(wil_file)
