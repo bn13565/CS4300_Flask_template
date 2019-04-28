@@ -19,10 +19,12 @@
     <!-- Above three required to run Bootstrap js (such as the collapse feature for Advanced Search -->
 
     <!-- Below three required for autocomplete -->
-    <!-- Large portion of the next few lines of code taken from: http://jqueryui.com/autocomplete/#multiple -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Above three required for autocomplete -->
+    <!-- Script for autocomplete -->
+    <!-- Large portion of the next few lines of code taken from: http://jqueryui.com/autocomplete/#multiple -->
     <script>
         $(function(){
             var availableTagsStr = {{autocomplete_words|tojson|safe}};
@@ -61,7 +63,32 @@
             $("#dislikesInput").autocomplete(autocomplete_config);
         });
     </script>
-     <!-- Above three required for autocomplete -->
+    <!-- Above three required for autocomplete -->
+    <script>
+        window.onload = function(){
+            var nearbySlider = document.getElementById("nearbySlider");
+            var nearbyEmphasisVal = document.getElementById("nearbyEmphasisVal");
+            nearbyEmphasisVal.innerHTML = nearbySlider.value;
+            nearbySlider.oninput = function(){
+                nearbyEmphasisVal.innerHTML = this.value;
+            }
+            
+            var languageSlider = document.getElementById("languageSlider");
+            var languageEmphasisVal = document.getElementById("languageEmphasisVal");
+            languageEmphasisVal.innerHTML = languageSlider.value;
+            languageSlider.oninput = function(){
+                languageEmphasisVal.innerHTML = this.value;
+            }
+
+            var drinkingSlider = document.getElementById("drinkingSlider");
+            var drinkingEmphasisVal = document.getElementById("drinkingEmphasisVal");
+            drinkingEmphasisVal.innerHTML = drinkingSlider.value;
+            drinkingSlider.oninput = function(){
+                drinkingEmphasisVal.innerHTML = this.value;
+            }
+        }
+    
+    </script>
 
 </head>
 <!-- https://www.w3schools.com/howto/howto_js_collapsible.asp -->
@@ -117,6 +144,10 @@
 
     .content {
         background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .slider {
+        vertical-align: middle;
     }
 
     #dnm {
@@ -183,6 +214,17 @@
                     <small id="nearbyHelp" class="form-text text-muted">
                         In or near what city would you like to travel to?
                     </small>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <small id="nearbyEmphasis" class="form-text text-muted">Emphasis:</small> 
+                        </div>
+                        <div class="col-sm-9 my-auto">
+                            <input id="nearbySlider" type="range" min="1" max="5" value="3">
+                        </div>
+                        <div class="col-sm-1">
+                            <small id="nearbyEmphasisVal" class="form-text text-muted"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -193,15 +235,16 @@
                     <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains"
                         value="{{ form_data['likes'] if  form_data['likes'] }}">
                     <small id="likesHelp" class="form-text text-muted">
-                        What are some things you would like to have in the places you travel to?
+                        Desirable qualities in travel locations
                     </small>
                 </div>
+
                 <div class="form-group col-sm-2">
                     <label for="dislikesInput">Dislikes</label>
                     <input type="text" class="form-control" id="dislikesInput" name="dislikes"
                         placeholder="Mosquito, Traffic" value="{{ form_data['dislikes'] if  form_data['dislikes'] }}">
                     <small id="dislikesHelp" class="form-text text-muted">
-                        What are some things you would not like to have in the places you travel to?
+                        Undesirable qualities in travel locations
                     </small>
                 </div>
             </div>
@@ -213,18 +256,43 @@
                     <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish"
                         value="{{ form_data['language'] if form_data['language'] }}">
                     <small id="languageHelp" class="form-text text-muted">
-                        What is the dominant language you would like the local populace to speak?
+                        Dominant language of the people at the locations
                     </small>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <small id="languageEmphasis" class="form-text text-muted">Emphasis:</small> 
+                        </div>
+                        <div class="col-sm-7 my-auto">
+                            <input id="languageSlider" type="range" min="1" max="5" value="3">
+                        </div>
+                        <div class="col-sm-2">
+                            <small id="languageEmphasisVal" class="form-text text-muted"></small>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="form-group col-sm-2">
                     <label for="drinkingAgeInput">Drinking Age</label>
                     <input type="text" class="form-control" id="drinkingAgeInput" name="drinkingAge" placeholder="18"
                         value="{{ form_data['drinkingAge'] if  form_data['drinkingAge'] }}">
                     <small id="drinkingAgeHelp" class="form-text text-muted">
-                        What would you like the drinking age of the destination to be?
+                        Decreased emphasis on places with higher drinking ages
                     </small>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <small id="drinkingEmphasis" class="form-text text-muted">Emphasis:</small> 
+                        </div>
+                        <div class="col-sm-7 my-auto">
+                            <input id="drinkingSlider" type="range" min="1" max="5" value="3">
+                        </div>
+                        <div class="col-sm-2">
+                            <small id="drinkingEmphasisVal" class="form-text text-muted"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Search Method -->
             <div class="row">
                 <div class="form-group col-sm-4 offset-sm-4">
                     <p>Search Method (select by clicking label)</p>
@@ -243,8 +311,9 @@
                 </div>
             </div>
         </div>
+        
+        <div class="mb-3"></div> <!-- Vertical margin so that Go! button isn't too close to Activities bar -->
 
-        <div class="mb-3"></div>
         <!-- Submit button -->
         <div style="display: flex; justify-content: center;">
             <button id="submit" type="submit" class="btn btn-success" style="text-align:center">Go!</button>
