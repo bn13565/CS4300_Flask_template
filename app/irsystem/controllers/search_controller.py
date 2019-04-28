@@ -58,7 +58,7 @@ with open('./data/images.json') as wil_file:
 
 with open('./data/words.json') as wil_file:
     autocomplete_words = json.load(wil_file)
-    
+
 with open('./data/query_expansion.json') as wil_file:
     query_expansion = json.load(wil_file)
 
@@ -320,4 +320,4 @@ def search():
 
     data = results_list
 
-    return render_template('search.html', data=data, form_data=form_data, autocomplete_words="hello")
+    return render_template('search.html', data=data, form_data=form_data, autocomplete_words=autocomplete_words)
