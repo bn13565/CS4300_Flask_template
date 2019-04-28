@@ -55,6 +55,9 @@ with open('./data/wikivoyage_lite_relevant_stable.json') as wil_file:
 with open('./data/images.json') as wil_file:
     images = json.load(wil_file)
 
+with open('./data/query_expansion.json') as wil_file:
+    images = json.load(wil_file)
+
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
 def getStars(score):
