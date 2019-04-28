@@ -58,6 +58,9 @@ with open('./data/images.json') as wil_file:
 
 with open('./data/words.json') as wil_file:
     autocomplete_words = json.load(wil_file)
+    
+with open('./data/query_expansion.json') as wil_file:
+    query_expansion = json.load(wil_file)
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
@@ -255,7 +258,27 @@ def search():
         return final_ranking
 
     #data = cos_sim([activities, likes, dislikes])
-    data = boolean_search([activities, likes, dislikes])
+
+    new_activities = []
+    new_likes = []
+    new_dislikes = []
+
+    for activity in activities:
+        if activity in query_expansion:
+            new_activities.append(activity)
+            new_activities.extend(query_expansion[activity][:3])
+
+    for like in likes:
+        if like in query_expansion:
+            new_likes.append(like)
+            new_likes.extend(query_expansion[like][:3])
+
+    for dislike in dislikes:
+        if dislike in query_expansion:
+            new_dislikes.append(dislike)
+            new_dislikes.extend(query_expansion[dislike][:3])
+
+    data = boolean_search([new_activities, new_likes, new_dislikes])
     # print(data[:25])
     sim_niche_list = []
     for loc in data:

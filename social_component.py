@@ -2,6 +2,8 @@ import json
 import pickle
 import numpy as np
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import svds
 
 # with open("./data/name_id_lookup.json", "r") as f:
 #     name_ids = json.load(f)
@@ -225,33 +227,33 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 # sentiments = sid.polarity_scores(tStr)
 
 
-with open('./data/word_id_lookup.json') as wil_file:
-    lookup = json.load(wil_file)
-
-with open('./data/inverted_index.json') as wil_file:
-    inverted = json.load(wil_file)
-
-with open('./data/words.json') as wil_file:
-    words = json.load(wil_file)
-
-lst = words.split(",")
-
-ids = []
-
-for i in lst:
-    if i in lookup:
-        ids.append(str(lookup[i]))
-
-new_inverted = {}
-
-for key in inverted:
-    if key in ids:
-        new_inverted[key] = inverted[key]
-
-#print(len(new_inverted))
-
-with open('./data/trimmed_inverted_index.json', "w") as f:
-    json.dump(new_inverted, f)
+# with open('./data/word_id_lookup.json') as wil_file:
+#     lookup = json.load(wil_file)
+#
+# with open('./data/inverted_index.json') as wil_file:
+#     inverted = json.load(wil_file)
+#
+# with open('./data/words.json') as wil_file:
+#     words = json.load(wil_file)
+#
+# lst = words.split(",")
+#
+# ids = []
+#
+# for i in lst:
+#     if i in lookup:
+#         ids.append(str(lookup[i]))
+#
+# new_inverted = {}
+#
+# for key in inverted:
+#     if key in ids:
+#         new_inverted[key] = inverted[key]
+#
+# #print(len(new_inverted))
+#
+# with open('./data/trimmed_inverted_index.json', "w") as f:
+#     json.dump(new_inverted, f)
 
 
 # for key in wikivoyage_lite:
@@ -276,6 +278,59 @@ with open('./data/trimmed_inverted_index.json', "w") as f:
 #         for i in range(3):
 #             revs.append(reviews_data[locs][0]['body'])
 #     return revs
+
+with open('./data/word_id_lookup.json') as wil_file:
+    word_to_index = json.load(wil_file)
+
+with open('./data/inverted_dict_id_word.json') as wil_file:
+    index_to_word = json.load(wil_file)
+
+data = pickle.load(open( './data/tfidf.pickle', "rb" ) )
+my_matrix = data.transpose()
+
+from scipy.sparse.linalg import svds
+u, s, v_trans = svds(my_matrix, k=100)
+# print(u.shape)
+# print(s.shape)
+# print(v_trans.shape)
+# import matplotlib
+# import numpy as np
+# import matplotlib.pyplot as plt
+# #%matplotlib inline
+# plt.plot(s[::-1])
+# plt.xlabel("Singular value number")
+# plt.ylabel("Singular value")
+# plt.show()
+
+words_compressed, _, docs_compressed = svds(my_matrix, k=40)
+docs_compressed = docs_compressed.transpose()
+# print(words_compressed.shape)
+# print(docs_compressed.shape)
+
+from sklearn.preprocessing import normalize
+words_compressed = normalize(words_compressed, axis = 1)
+
+def closest_words(word_in, k = 10):
+    if word_in not in word_to_index: return "Not in vocab."
+    sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
+    asort = np.argsort(-sims)[:k+1]
+    return [(index_to_word[str(i)],sims[i]/sims[asort[0]]) for i in asort[1:]]
+
+dict = {}
+
+for key in word_to_index:
+    dict[key] = [x[0] for x in closest_words(key)]
+#print(closest_words("movie"))
+
+with open('./data/query_expansion.json', "w") as f:
+    json.dump(dict, f)
+
+# word_to_index = vectorizer.vocabulary_
+# index_to_word = {i:t for t,i in word_to_index.iteritems()}
+# print(words_compressed.shape)
+
+
+#print(type(data))
 
 
 #print(get_reviews("poncha springs"))
