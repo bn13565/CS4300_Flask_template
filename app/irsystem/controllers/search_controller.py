@@ -21,6 +21,7 @@ niche_value = None
 reviews_data = None
 wikivoyage_lite = None
 images = None
+autocomplete_words = None
 
 with open('./data/trimmed_inverted_index.json') as wil_file:
     inverted_index = json.load(wil_file)
@@ -108,15 +109,8 @@ def search():
         "drinkingAge" : request.args.get('drinkingAge')
     }
 
-    wnl = WordNetLemmatizer()
-
-    autocomplete_words = autocomplete_words.split(',')
-
     if not activities and not likes:
         return render_template('search.html', data=[], form_data=form_data, autocomplete_words=autocomplete_words)
-
-    # results
-    results_list = []
 
     activities = activities.lower()
     activities = re.findall(r'[^,\s]+', activities)
@@ -188,6 +182,8 @@ def search():
 
 
         return ranking
+
+    wnl = WordNetLemmatizer()
 
     def cos_sim(query):
         query_dict = {}
@@ -280,6 +276,9 @@ def search():
 
     maxSim = max([l[2] for l in top_10]+[1])
 
+    # results
+    results_list = []
+
     for loc in top_10:
         l = wikivoyage_lite[loc[0]]['languages']
         d = wikivoyage_lite[loc[0]]['drinking']
@@ -298,4 +297,4 @@ def search():
 
     data = results_list
 
-    return render_template('search.html', data=data, form_data=form_data, autocomplete_words = autocomplete_words)
+    return render_template('search.html', data=data, form_data=form_data, autocomplete_words="hello")

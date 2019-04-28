@@ -20,42 +20,46 @@
 
     <!-- Below three required for autocomplete -->
     <!-- Large portion of the next few lines of code taken from: http://jqueryui.com/autocomplete/#multiple -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-        var availableTags = {{autocomplete_words}};
-        function split( val ) {
-            return val.split(/,\s*/);
-        }
-        function extractLast(term) {
-            return split(term).pop();
-        }
-        var autocomplete_config = {
-            minLength: 0,
-            source: function(request, response) {
-                // delegate back to autocomplete, but extract the last term
-                response($.ui.autocomplete.filter(
-                    availableTags, extractLast(request.term)));
-            },
-            focus: function() {
-                // prevent value inserted on focus
-                return false;
-            },
-            select: function( event, ui ) {
-                var terms = split( this.value );
-                // remove the current input
-                terms.pop();
-                // add the selected item
-                terms.push( ui.item.value );
-                // add placeholder to get the comma-and-space at the end
-                terms.push("");
-                this.value = terms.join( ", " );
-                return false;
+        $(function(){
+            var availableTagsStr = {{autocomplete_words|tojson|safe}};
+            availableTags = availableTagsStr.split(',')
+            function split(val) {
+                return val.split(/,\s*/);
             }
-        }
-        $("#activitiesInput").autocomplete(autocomplete_specs);
-        $("#likesInput").autocomplete(autocomplete_specs);
-        $("#dislikesInput").autocomplete(autocomplete_specs);
+            function extractLast(term) {
+                return split(term).pop();
+            }
+            var autocomplete_config = {
+                minLength: 1,
+                source: function(request, response) {
+                    // delegate back to autocomplete, but extract the last term
+                    response($.ui.autocomplete.filter(
+                        availableTags, extractLast(request.term)).slice(0,10));
+                },
+                focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value );
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push("");
+                    this.value = terms.join( ", " );
+                    return false;
+                }
+            }
+            $("#activitiesInput").autocomplete(autocomplete_config);
+            $("#likesInput").autocomplete(autocomplete_config);
+            $("#dislikesInput").autocomplete(autocomplete_config);
+        });
     </script>
      <!-- Above three required for autocomplete -->
 
