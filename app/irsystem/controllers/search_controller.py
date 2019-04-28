@@ -47,7 +47,7 @@ with open('./data/doc_norms.json') as wil_file:
 with open('./data/nicheness.json') as wil_file:
     niche_value = json.load(wil_file)
 
-with open('./data/combined_reddit_sentiment.json') as wil_file:
+with open('./data/final_reddit.json') as wil_file:
     reviews_data = json.load(wil_file)
 
 with open('./data/wikivoyage_lite_relevant_stable.json') as wil_file:
