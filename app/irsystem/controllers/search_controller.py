@@ -47,7 +47,7 @@ with open('./data/doc_norms.json') as wil_file:
 with open('./data/nicheness.json') as wil_file:
     niche_value = json.load(wil_file)
 
-with open('./data/combined_reddit_sentiment.json') as wil_file:
+with open('./data/final_reddit.json') as wil_file:
     reviews_data = json.load(wil_file)
 
 with open('./data/wikivoyage_lite_relevant_stable.json') as wil_file:
@@ -297,6 +297,16 @@ def search():
         revs = [x for x in reviews_data[locs]]
         return revs
 
+    def get_relevant_keywords(location):
+        result = []
+        lst = new_activities + new_likes
+        for token in lst:
+            if str(word_id_lookup[token]) in inverted_index:
+                id = name_id_lookup[location[0]]
+                result.extend([token for item in inverted_index[str(word_id_lookup[token])] if item[0] == id])
+
+        return result
+
     maxSim = max([l[2] for l in top_10]+[1])
 
     # results
@@ -316,6 +326,8 @@ def search():
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
         entry['image'] = base_url + images[loc[0]].split(" ")[0]
+        entry['relevant_keywords'] = get_relevant_keywords(loc)
+        
         results_list.append(entry)
 
     data = results_list
