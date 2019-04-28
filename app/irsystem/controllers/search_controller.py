@@ -100,6 +100,11 @@ def search():
     drinkingAge = request.args.get('drinkingAge')
     language = request.args.get('language')
 
+    # The following three will get you the slider values you need
+    nearbySlider = request.args.get('nearbySlider')
+    languageSlider = request.args.get('languageSlider')
+    drinkingSlider = request.args.get('drinkingSlider')
+
     #radio for if we should use nicheness in ranking
     use_nicheness = request.args.get('useNicheness')
     use_nicheness = True if use_nicheness == "y" else False
@@ -110,7 +115,10 @@ def search():
         "dislikes" : request.args.get('dislikes'),
         "nearby" : request.args.get('nearby'),
         "language" : request.args.get('language'),
-        "drinkingAge" : request.args.get('drinkingAge')
+        "drinkingAge" : request.args.get('drinkingAge'),
+        "nearbySlider" : request.args.get('nearbySlider'),
+        "languageSlider" : request.args.get('languageSlider'),
+        "drinkingSlider" : request.args.get('drinkingSlider')
     }
 
     if not activities and not likes:

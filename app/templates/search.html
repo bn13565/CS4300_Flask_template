@@ -209,7 +209,7 @@
                 <input type="text" class="form-control" id="activitiesInput" name="activities"
                     placeholder="Kayaking, Hiking" value="{{ form_data['activities'] if  form_data['activities']  }}">
                 <small id="activitiesHelp" class="form-text text-muted">
-                    List out activities that you're interested in doing on your trip!
+                    List out the activities that you want to do on your trip!
                 </small>
             </div>
         </div>
@@ -238,7 +238,8 @@
                             <small id="nearbyEmphasis" class="form-text text-muted">Emphasis:</small> 
                         </div>
                         <div class="col-sm-9 my-auto">
-                            <input id="nearbySlider" name="nearbySlider" type="range" min="1" max="5" value="3">
+                            <input id="nearbySlider" name="nearbySlider" type="range" min="1" max="5" 
+                                value="{{ form_data['nearbySlider'] if form_data['nearbySlider'] else 3}}">
                         </div>
                         <div class="col-sm-1">
                             <small id="nearbyEmphasisVal" class="form-text text-muted"></small>
@@ -282,7 +283,8 @@
                             <small id="languageEmphasis" class="form-text text-muted">Emphasis:</small> 
                         </div>
                         <div class="col-sm-7 my-auto">
-                            <input id="languageSlider" name="languageSlider" type="range" min="1" max="5" value="3">
+                            <input id="languageSlider" name="languageSlider" type="range" min="1" max="5" 
+                                value="{{ form_data['languageSlider'] if form_data['languageSlider'] else 3}}">
                         </div>
                         <div class="col-sm-2">
                             <small id="languageEmphasisVal" class="form-text text-muted"></small>
@@ -302,7 +304,8 @@
                             <small id="drinkingEmphasis" class="form-text text-muted">Emphasis:</small> 
                         </div>
                         <div class="col-sm-7 my-auto">
-                            <input id="drinkingSlider" name="drinkingSlider" type="range" min="1" max="5" value="3">
+                            <input id="drinkingSlider" name="drinkingSlider" type="range" min="1" max="5" 
+                                value="{{ form_data['drinkingSlider'] if form_data['drinkingSlider'] else 3}}">
                         </div>
                         <div class="col-sm-2">
                             <small id="drinkingEmphasisVal" class="form-text text-muted"></small>
