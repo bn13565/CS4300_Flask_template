@@ -28,7 +28,7 @@ with open('./data/trimmed_inverted_index.json') as wil_file:
 with open('./data/word_id_lookup.json') as wil_file:
     word_id_lookup = json.load(wil_file)
 
-with open('./data/name_id_lookup.json') as wil_file:
+with open('./data/name_id_lookup_stable.json') as wil_file:
     name_id_lookup = json.load(wil_file)
 
 with open('./data/idf.json') as wil_file:
@@ -37,7 +37,7 @@ with open('./data/idf.json') as wil_file:
 with open('./data/inverted_dict_id_word.json') as wil_file:
     inverted_dict_id_word = json.load(wil_file)
 
-with open('./data/inverted_dict_id_name.json') as wil_file:
+with open('./data/inverted_dict_id_name_stable.json') as wil_file:
     inverted_dict_id_name = json.load(wil_file)
 
 with open('./data/doc_norms.json') as wil_file:
@@ -49,7 +49,7 @@ with open('./data/nicheness.json') as wil_file:
 with open('./data/combined_reddit_sentiment.json') as wil_file:
     reviews_data = json.load(wil_file)
 
-with open('./data/wikivoyage_lite_relevant.json') as wil_file:
+with open('./data/wikivoyage_lite_relevant_stable.json') as wil_file:
     wikivoyage_lite = json.load(wil_file)
 
 with open('./data/images.json') as wil_file:
@@ -290,7 +290,7 @@ def search():
         #entry["sentiment"] = str(int(sentiments[loc[0]] * 100))
         entry["url"] = wikivoyage_lite[loc[0]]['url']
         entry["drinking"] = d if d else "unknown"
-        entry["languages"] = ", ".join(l) if len(l) != 0 else "unknown" 
+        entry["languages"] = ", ".join(l) if len(l) != 0 else "unknown"
         entry['type'] = format_type(wikivoyage_lite[loc[0]]['type'])
         entry['nicheness_stars'] = getStars(loc[1])
         entry['image'] = base_url + images[loc[0]].split(" ")[0]
