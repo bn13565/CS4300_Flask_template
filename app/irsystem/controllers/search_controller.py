@@ -24,6 +24,7 @@ images = None
 autocomplete_words = None
 quuery_expansion = None
 
+
 with open('./data/trimmed_inverted_index.json') as wil_file:
     inverted_index = json.load(wil_file)
 
@@ -99,6 +100,10 @@ def search():
     nearby = request.args.get('nearby')
     drinkingAge = request.args.get('drinkingAge')
     language = request.args.get('language')
+    nearbySlider = request.args.get('nearbySlider')
+    languageSlider =  request.args.get('languageSlider')
+    drinkingSlider = request.args.get('drinkingSlider')
+    print(nearbySlider)
 
     # The following three will get you the slider values you need
     nearbySlider = request.args.get('nearbySlider')
@@ -130,6 +135,7 @@ def search():
     likes = re.findall(r'[^,\s]+', likes)
     dislikes = dislikes.lower()
     dislikes = re.findall(r'[^,\s]+', dislikes)
+    
     if nearby is None:
         nearby = ''
     if drinkingAge  is None:
@@ -156,33 +162,34 @@ def search():
     global images
     global base_url
 
+
     base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
 
     if not doc_norms:
         load_data()
 
     def advanced_search(ranking, is_boolean_search):
-        nearby_weight = 10.0
-        language_weight = 0.8
-        drinking_weight = 0.8
-
+       
         if is_boolean_search:
 
-            if nearby != '':
+            if nearby != '':              
+                nearbySlider_int = int(nearbySlider)
                 if nearby in wikivoyage_lite:
                     for place in wikivoyage_lite[nearby]["nearby_links"]:
                         if place in name_id_lookup:
                             place_id = name_id_lookup[place]
-                            ranking[place_id] *= nearby_weight
+                            ranking[place_id] *= nearbySlider_int*100
 
             if language != '':
+                languageSlider_int = int(languageSlider)
                 for place in wikivoyage_lite:
                     if place in name_id_lookup:
                         if language not in wikivoyage_lite[place]['languages']:
                             place_id = name_id_lookup[place]
-                            ranking[place_id] *= language_weight
+                            ranking[place_id] *= (0.5/languageSlider_int)
 
             if drinkingAge != '':
+                drinkingSlider_int = int(drinkingSlider)
                 age = int(drinkingAge)
                 for place in wikivoyage_lite:
                     if place in name_id_lookup:
@@ -190,7 +197,7 @@ def search():
                             continue
                         elif wikivoyage_lite[place]['drinking'] > age:
                             place_id = name_id_lookup[place]
-                            ranking[place_id] *= drinking_weight
+                            ranking[place_id] *= 0.5/drinkingSlider_int
 
 
         return ranking
