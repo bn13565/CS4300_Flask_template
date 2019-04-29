@@ -107,7 +107,6 @@ def search():
     nearbySlider = request.args.get('nearbySlider')
     languageSlider =  request.args.get('languageSlider')
     drinkingSlider = request.args.get('drinkingSlider')
-    print(nearbySlider)
 
     # The following three will get you the slider values you need
     nearbySlider = request.args.get('nearbySlider')
