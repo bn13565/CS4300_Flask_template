@@ -24,45 +24,23 @@ images = None
 autocomplete_words = None
 quuery_expansion = None
 
+with open('./data/final.json') as wil_file:
+    all_data = json.load(wil_file)
 
-with open('./data/final_inverted_index.json') as wil_file:
-    inverted_index = json.load(wil_file)
 
-with open('./data/word_id_lookup.json') as wil_file:
-    word_id_lookup = json.load(wil_file)
-
-with open('./data/name_id_lookup_stable.json') as wil_file:
-    name_id_lookup = json.load(wil_file)
-
-with open('./data/idf.json') as wil_file:
-    idf = json.load(wil_file)
-
-with open('./data/inverted_dict_id_word.json') as wil_file:
-    inverted_dict_id_word = json.load(wil_file)
-
-with open('./data/inverted_dict_id_name_stable.json') as wil_file:
-    inverted_dict_id_name = json.load(wil_file)
-
-with open('./data/doc_norms.json') as wil_file:
-    doc_norms = json.load(wil_file)
-
-with open('./data/nicheness.json') as wil_file:
-    niche_value = json.load(wil_file)
-
-with open('./data/final_reddit.json') as wil_file:
-    reviews_data = json.load(wil_file)
-
-with open('./data/wikivoyage_lite_relevant_stable.json') as wil_file:
-    wikivoyage_lite = json.load(wil_file)
-
-with open('./data/images.json') as wil_file:
-    images = json.load(wil_file)
-
-with open('./data/words.json') as wil_file:
-    autocomplete_words = json.load(wil_file)
-
-with open('./data/query_expansion.json') as wil_file:
-    query_expansion = json.load(wil_file)
+inverted_index = all_data["inverted_index"]
+word_id_lookup = all_data["word_id_lookup"]
+name_id_lookup = all_data["name_id_lookup"]
+idf = all_data["idf"]
+inverted_dict_id_word = all_data["inverted_dict_id_word"]
+inverted_dict_id_name = all_data["inverted_dict_id_name"]
+doc_norms = all_data["doc_norms"]
+niche_value = all_data["niche_value"]
+reviews_data = all_data["reviews_data"]
+wikivoyage_lite = all_data["wikivoyage_lite"]
+images = all_data["images"]
+autocomplete_words = all_data["autocomplete_words"]
+query_expansion = all_data["query_expansion"]
 
 #in: score between 0-1
 #out: html stars, rounded to nearest .1
