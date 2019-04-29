@@ -315,9 +315,13 @@ def search():
 
     def get_reviews(locs):
         revs = [x for x in reviews_data[locs]]
+        new_revs = []
         for r in revs:
-            r[0] = " ".join(r[0].split(" ")[1:-1])
-        return revs
+            if r[0] == "No reviews available for this place":
+                new_revs.append((r[0], r[1]))
+            else:
+                new_revs.append((" ".join(r[0].split(" ")[1:-1]), r[1]))
+        return new_revs
 
     def get_relevant_keywords(location):
         result = []
