@@ -371,14 +371,14 @@
                 <!-- <p class="card-text">Location selected because it has:</p> -->
                 <span class="collapsible content">Toggle Details</span>
                 <div class="collapsible-content">
-                    <p>Local Languages: <span class="text-muted">{{ data[data_idx]['languages'] }}</span></p>
-                    <p>Drinking Age: <span class="text-muted">{{ data[data_idx]['drinking'] }}</span></p>
-                    <p>Relevant Snippets from Reddit:
+                    <span>Local Languages: <span class="text-muted">{{ data[data_idx]['languages'] }}</span></span><br>
+                    <span>Drinking Age: <span class="text-muted">{{ data[data_idx]['drinking'] }}</span></span><br>
+                    <span>Relevant Snippets from Reddit:
                         <span style="color:#DAF7A6;font-size:25px">■</span> positive sentiment <span
-                            style="color:#FEE081;font-size:25px">■</span> neutral/negative sentiment</p>
+                            style="color:#FEE081;font-size:25px">■</span> neutral/negative sentiment</span><br>
                     {% for i in data[data_idx]['reviews'] %}
                     <p style='background-color:{{ "#DAF7A6" if i[1] >= 0.5 else "#FEE081" }}'>
-                        {{ (i[0][:299] + "...") if i[0]|length > 299 else i[0] }}</p>
+                        {{ "..." + i[0][:299] + "..." }}</p>
                     {% endfor %}
                 </div>
             </div>

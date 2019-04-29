@@ -311,6 +311,8 @@ def search():
 
     def get_reviews(locs):
         revs = [x for x in reviews_data[locs]]
+        for r in revs:
+            r[0] = " ".join(r[0].split(" ")[1:-1])
         return revs
 
     def get_relevant_keywords(location):
