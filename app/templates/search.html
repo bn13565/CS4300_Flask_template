@@ -5,6 +5,8 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Permanent+Marker" rel="stylesheet">
 
     <!-- Below three required to run Bootstrap js (such as the collapse feature for Advanced Search -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -115,7 +117,14 @@
 
     body {
         font-family: Futura;
-        color: #4285F4
+        color: #4285F4;
+        background-color:aliceblue;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    h1 {
+        font-family: "Permanent Marker", sans-serif;
+        font-size: 75px;
     }
 
     .collapsible-content {
@@ -136,6 +145,7 @@
 
     a:hover {
         color: skyblue;
+        text-decoration: none;
     }
 
     input {
@@ -167,7 +177,7 @@
         }
     }
 
-    label {
+    .label_ {
         margin-left: 15px;
         display: inline-block;
     }
@@ -191,26 +201,34 @@
         margin: auto;
         color:white;
     }
+    .row_ {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
 
 </style>
 
 <body>
-    <div class="top-div" style="height:{{ '35vh' if data | length == 0 else '20vh'}}">
-        <div class="top-spacer" style="height:{{ '8vh' if data | length == 0 else '0px'}}"></div>
-        <h1 style="font-size: 55px" class="global-search">
-            Desti-Nation Matcher
-        </h1>
+    <div class="top-div" style="height:{{ '40vh' if data | length == 0 else '20vh'}}">
+        <div class="top-spacer" style="height:{{ '15vh' if data | length == 0 else '0px'}}"></div>
+        <a href="{{ url_for('irsystem.search') }}">
+            <h1 class="global-search">
+                Desti-Nation Matcher
+            </h1>
+        </a>
     </div>
     <form>
         <!-- Activities Input -->
         <div class="row">
             <div class="form-group col-sm-4 offset-sm-4">
-                <label for="activitiesInput">Activities</label>
                 <input type="text" class="form-control" id="activitiesInput" name="activities"
                     placeholder="Kayaking, Hiking" value="{{ form_data['activities'] if  form_data['activities']  }}">
                 <small id="activitiesHelp" class="form-text text-muted">
-                    List out the activities that you want to do on your trip!
+                    What do you want to do on your trip?
                 </small>
+            </div>
+            <div class="form-group col-sm-2">
+                
             </div>
         </div>
 
@@ -225,7 +243,7 @@
         <!-- Advanced Search -->
         <div class="collapse" id="advancedSearch">
             <!-- Nearby Input -->
-            <div class="row">
+            <div class="row row_">
                 <div class="form-group col-sm-4 offset-sm-4">
                     <label for="nearbyInput">Nearby</label>
                     <input type="text" class="form-control" id="nearbyInput" name="nearby" placeholder="Paris"
@@ -249,7 +267,7 @@
             </div>
 
             <!-- Likes and Dislikes Inputs -->
-            <div class="row">
+            <div class="row row_">
                 <div class="form-group col-sm-2 offset-sm-4">
                     <label for="likesInput">Likes</label>
                     <input type="text" class="form-control" id="likesInput" name="likes" placeholder="Cold, Mountains"
@@ -270,7 +288,7 @@
             </div>
 
             <!-- Language and Drinking Age Inputs -->
-            <div class="row">
+            <div class="row row_">
                 <div class="form-group  col-sm-2 offset-sm-4">
                     <label for="languageInput">Language</label>
                     <input type="text" class="form-control" id="languageInput" name="language" placeholder="Spanish"
@@ -279,10 +297,10 @@
                         Dominant language of the people at the locations
                     </small>
                     <div class="row">
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             <small id="languageEmphasis" class="form-text text-muted">Emphasis:</small> 
                         </div>
-                        <div class="col-sm-7 my-auto">
+                        <div class="col-sm-6 my-auto">
                             <input id="languageSlider" name="languageSlider" type="range" min="1" max="5" 
                                 value="{{ form_data['languageSlider'] if form_data['languageSlider'] else 3}}">
                         </div>
@@ -300,10 +318,10 @@
                         Decreased emphasis on places with higher drinking ages
                     </small>
                     <div class="row">
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             <small id="drinkingEmphasis" class="form-text text-muted">Emphasis:</small> 
                         </div>
-                        <div class="col-sm-7 my-auto">
+                        <div class="col-sm-6 my-auto">
                             <input id="drinkingSlider" name="drinkingSlider" type="range" min="1" max="5" 
                                 value="{{ form_data['drinkingSlider'] if form_data['drinkingSlider'] else 3}}">
                         </div>
@@ -320,12 +338,12 @@
                     <p>Search Method</p>
                     <div id="l1" class="form-check form-check-inline">
                         <input id="radio1" type="radio" name="useNicheness" value="y" checked><label
-                            class="form-check-label text-muted" for="radio1">Similarity<span style="color:white">.</span>and<span
+                            class="form-check-label text-muted label_" for="radio1">Similarity<span style="color:white">.</span>and<span
                                 style="color:white">.</span>Nicheness*</label>
                     </div>
                     <div id = "l2" class="form-check form-check-inline">
                         <input id="radio2" type="radio" name="useNicheness" value="n"><label
-                            class="form-check-label text-muted" for="radio2">Similarity<span style="color:white">.</span>Only</label>
+                            class="form-check-label text-muted label_" for="radio2">Similarity<span style="color:white">.</span>Only</label>
                     </div>
                     <small id="useNichenessHelp" class="form-text text-muted">
                         *Nicheness refers to our rating of how likely this place is a "hidden gem"
@@ -338,7 +356,7 @@
 
         <!-- Submit button -->
         <div style="display: flex; justify-content: center;">
-            <button id="submit" type="submit" class="btn btn-success" style="text-align:center">Go!</button>
+            <button id="submit" type="submit" class="btn btn-primary" style="text-align:center">Go!</button>
             <image id="dnm" width="40px" height="40px" src="{{ url_for('static', filename='dnm.png') }}"></image>
         </div>
 
@@ -386,6 +404,9 @@
     </div>
     {% endfor %}
     {% endif %}
+    <div style="text-align:center">
+        <a href="{{ url_for('irsystem.about') }}">About</a>
+    </div>
 
 </body>
 <script>

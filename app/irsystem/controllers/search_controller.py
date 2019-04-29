@@ -92,6 +92,10 @@ def format_type(t):
         return "Region"
     return "Unknown"
 
+@irsystem.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
+
 @irsystem.route('/', methods=['GET'])
 def search():
     activities = request.args.get('activities')
