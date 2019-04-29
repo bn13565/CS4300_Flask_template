@@ -333,44 +333,56 @@ import re
 
 #print(type(data))
 
-with open('./data/combined_reddit.json') as wil_file:
-    reddit = json.load(wil_file)
-
-with open('./data/combined_reddit_sentiment.json') as wil_file:
-    sentiments = json.load(wil_file)
+with open('./data/trimmed_inverted_index.json') as wil_file:
+    words = json.load(wil_file)
 
 dict = {}
 
-for key in reddit:
-     words = re.findall(r'[^,-/\s]+', key)
-     dict[key] = []
-     for k in range(len(reddit[key])):
-         first = (reddit[key][k]['body'].lower()).find(key)
-         sentiment_score = sentiments[key][k][1]
+for key in words:
+    dict[key] = []
+    for idx, count in words[key]:
+        if count > 1:
+            dict[key].append([idx, count])
 
-         if first == -1:
-             first = (reddit[key][k]['body'].lower()).find(words[-1])
-             if first == -1:
-                 dict[key].append((reddit[key][k]['body'][:300], sentiment_score))
-             else:
-                 start = max(0, first - 150)
-                 end = start + 300
-                 #print(start)
-
-                 #print(end)
-                 text = reddit[key][k]['body'][start:end]
-                 dict[key].append((text, sentiment_score))
-         else:
-             start = max(0, first - 150)
-             end = start + 300
-             #print(start)
-
-             #print(end)
-             text = reddit[key][k]['body'][start:end]
-             dict[key].append((text, sentiment_score))
-
-
-with open('./data/final_reddit.json', "w") as f:
+with open('./data/final_inverted_index.json', "w") as f:
     json.dump(dict, f)
+
+
+#
+# with open('./data/combined_reddit_sentiment.json') as wil_file:
+#     sentiments = json.load(wil_file)
+#
+# dict = {}
+#
+# for key in reddit:
+#      words = re.findall(r'[^,-/\s]+', key)
+#      dict[key] = []
+#      for k in range(len(reddit[key])):
+#          first = (reddit[key][k]['body'].lower()).find(key)
+#          sentiment_score = sentiments[key][k][1]
+#
+#          if first == -1:
+#              first = (reddit[key][k]['body'].lower()).find(words[-1])
+#              if first == -1:
+#                  dict[key].append((reddit[key][k]['body'][:300], sentiment_score))
+#              else:
+#                  start = max(0, first - 150)
+#                  end = start + 300
+#                  #print(start)
+#
+#                  #print(end)
+#                  text = reddit[key][k]['body'][start:end]
+#                  dict[key].append((text, sentiment_score))
+#          else:
+#              start = max(0, first - 150)
+#              end = start + 300
+#              #print(start)
+#
+#              #print(end)
+#              text = reddit[key][k]['body'][start:end]
+#              dict[key].append((text, sentiment_score))
+#
+#
+
 
 #print(get_reviews("poncha springs"))

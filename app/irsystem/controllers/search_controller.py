@@ -25,7 +25,7 @@ autocomplete_words = None
 quuery_expansion = None
 
 
-with open('./data/trimmed_inverted_index.json') as wil_file:
+with open('./data/final_inverted_index.json') as wil_file:
     inverted_index = json.load(wil_file)
 
 with open('./data/word_id_lookup.json') as wil_file:
@@ -135,7 +135,7 @@ def search():
     likes = re.findall(r'[^,\s]+', likes)
     dislikes = dislikes.lower()
     dislikes = re.findall(r'[^,\s]+', dislikes)
-    
+
     if nearby is None:
         nearby = ''
     if drinkingAge  is None:
@@ -169,10 +169,10 @@ def search():
         load_data()
 
     def advanced_search(ranking, is_boolean_search):
-       
+
         if is_boolean_search:
 
-            if nearby != '':              
+            if nearby != '':
                 nearbySlider_int = int(nearbySlider)
                 if nearby in wikivoyage_lite:
                     for place in wikivoyage_lite[nearby]["nearby_links"]:
@@ -343,7 +343,7 @@ def search():
         entry['nicheness_stars'] = getStars(loc[1])
         entry['image'] = base_url + images[loc[0]].split(" ")[0]
         entry['relevant_keywords'] = get_relevant_keywords(loc)
-        
+
         results_list.append(entry)
 
     data = results_list
