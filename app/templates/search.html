@@ -317,13 +317,13 @@
             <!-- Search Method -->
             <div class="row">
                 <div class="form-group col-sm-4 offset-sm-4">
-                    <p>Search Method (select by clicking label)</p>
-                    <div class="form-check form-check-inline">
+                    <p>Search Method</p>
+                    <div id="l1" class="form-check form-check-inline">
                         <input id="radio1" type="radio" name="useNicheness" value="y" checked><label
                             class="form-check-label text-muted" for="radio1">Similarity<span style="color:white">.</span>and<span
                                 style="color:white">.</span>Nicheness*</label>
                     </div>
-                    <div class="form-check form-check-inline">
+                    <div id = "l2" class="form-check form-check-inline">
                         <input id="radio2" type="radio" name="useNicheness" value="n"><label
                             class="form-check-label text-muted" for="radio2">Similarity<span style="color:white">.</span>Only</label>
                     </div>
@@ -359,8 +359,13 @@
                     <span>Similarity: </span>
                     {{ data[data_idx]['sim_stars']|safe }}
                     <br>
-                    <span> Relative Nicheness: </span>
+                    <span>Relative Nicheness: </span>
                     {{ data[data_idx]['nicheness_stars']|safe }}
+                    <br>
+                        <span>Relevant Keywords: </span>
+                    {% for i in range(data[data_idx]['relevant_keywords'] | length) %}
+                        <span class="badge">{{ data[data_idx]['relevant_keywords'][i] }}</span>
+                    {% endfor %}
                     <br>
                 </span>
                 <!-- <p class="card-text">Location selected because it has:</p> -->
@@ -397,6 +402,16 @@
             }
         });
     }
+
+    //fix the stupid radio buttons
+    var l1 = document.getElementById("l1");
+    var l2 = document.getElementById("l2");
+    l1.addEventListener("click", function () {
+        this.firstElementChild.click();
+    });
+    l2.addEventListener("click", function () {
+        this.firstElementChild.click();
+    });
 
     var submit = document.getElementById("submit");
     submit.addEventListener("click", function () {
